@@ -9,11 +9,10 @@ import org.scalatest.FlatSpec
 import com.agilogy.simpledb._
 import com.agilogy.simpledb.schema._
 import com.agilogy.simpledb.dsl._
+
 class ExpressionTest extends FlatSpec{
 
   private val mockDs:DataSource = new SimpleDataSource
-
-  private val db = Database(mockDs)
 
   behavior of "columns"
   
@@ -29,7 +28,7 @@ class ExpressionTest extends FlatSpec{
   private val p = People("p")
   
   they should "be valid expressions" in {
-    db.from(p).where(p.inactive)
+    from(p).where(p.inactive)
     val e:Predicate = p.inactive and p.deleted
     val e2:Predicate = p.inactive or true
     val e3:Predicate = p.inactive ==== true
@@ -69,7 +68,7 @@ class ExpressionTest extends FlatSpec{
   behavior of "sum aggregate function"
 
   ignore should "return an option of the summed type" in {
-    val res:Query0[Option[Int]] = db.from(p).select(sum(p.age).as("ages")).withoutParams
+    val res:Query0[Option[Int]] = from(p).select(sum(p.age).as("ages")).withoutParams
 
   }
 

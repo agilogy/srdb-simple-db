@@ -5,7 +5,8 @@ import javax.sql.DataSource
 import com.agilogy.simpledb.dsl.Syntax
 import com.agilogy.srdb.tx.{TransactionController, TransactionConfig, Transaction}
 
-class Database private(val ds: DataSource) extends DatabaseStatementFactory with DatabaseQueryFactory with DatabaseOperations with Syntax {
+@deprecated("Use the functions available when importing com.agilogy.simpledb._ and com.agilogy.simpledb.dsl._")
+class Database private(val ds: DataSource) extends StatementFactory with QueryFactory with DatabaseOperations with Syntax {
 
   val db = this
 
@@ -17,6 +18,6 @@ class Database private(val ds: DataSource) extends DatabaseStatementFactory with
 
 object Database extends Measurable {
 
-  def apply(ds: DataSource) = new Database(ds)
+  def apply(ds: DataSource): Database = new Database(ds)
 }
 

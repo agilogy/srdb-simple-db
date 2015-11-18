@@ -37,8 +37,6 @@ object TestSchema {
     override val primaryKey: Seq[Column[_]] = Seq(id)
   }
 
-  private val d = Departments("d")
-
   case class Employee(id: Long, name: String, departmentId: Long)
 
   case class Employees(alias: String) extends Table {
@@ -51,8 +49,6 @@ object TestSchema {
     val reads: NamedDbReader[Employee] = reader(id,name,departmentId).map((Employee.apply _).tupled)
     override val primaryKey: Seq[Column[_]] = Seq(id)
   }
-
-  private val e = Employees("e")
 
   case class WithNumeric(id: Long, number: BigDecimal)
 
@@ -78,8 +74,6 @@ object TestSchema {
 
     val reads = reader(id,employeeId,name).map((EmployeeFamilyMember.apply _).tupled) //(row => EmployeeFamilyMember(row.get(id), row.get(employeeId), row.get(name)))
   }
-
-  private val w = WithNumerics("w")
 
 //  case class DummyWithDateTimes(alias: String = "dwdt") extends Table {
 //    override val tableName: String = "dummy_with_date_times"

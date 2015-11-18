@@ -1,12 +1,10 @@
 package com.agilogy.simpledb.dsl
 
-import javax.sql.DataSource
-
 import com.agilogy.simpledb.{ParameterValue, Query}
 import com.agilogy.simpledb.schema.Column
-import com.agilogy.srdb.types.{DbCursorReader, DbReader}
+import com.agilogy.srdb.types.DbCursorReader
 
-case class DslQuery[RT] private(ds:DataSource, from: Relation, where: Predicate, select: Seq[SelectedElement[_]], reads: DbCursorReader[RT],
+case class DslQuery[RT] private(from: Relation, where: Predicate, select: Seq[SelectedElement[_]], reads: DbCursorReader[RT],
                                 groupBy: Seq[Column[_]] = Seq.empty, orderBy: Seq[OrderByCriterion] = Seq.empty,
                                 constants:Seq[Constant[_]], isDistinct:Boolean = false)
 extends Query[RT]{
@@ -31,13 +29,13 @@ extends Query[RT]{
 }
 
 object DslQuery {
-  private[dsl] def build[RT](ds:DataSource, from: Relation, where: Predicate, select: Seq[SelectedElement[_]], reads: DbCursorReader[RT], groupBy: Seq[Column[_]] = Seq.empty, orderBy: Seq[OrderByCriterion] = Seq.empty): DslQuery[RT] = {
+  private[dsl] def build[RT](from: Relation, where: Predicate, select: Seq[SelectedElement[_]], reads: DbCursorReader[RT], groupBy: Seq[Column[_]] = Seq.empty, orderBy: Seq[OrderByCriterion] = Seq.empty): DslQuery[RT] = {
     import ConstantAllocation.{allocateRelationConstants,allocateExpressionConstants,allocateSelectConstants}
     val constantAllocation = for {
       f <- allocateRelationConstants(from)
       w <- allocateExpressionConstants(where)
       s <- allocateSelectConstants(select)
-    } yield DslQuery(ds, f, w, s, reads, groupBy, orderBy, Seq.empty)
+    } yield DslQuery(f, w, s, reads, groupBy, orderBy, Seq.empty)
 
     val (q,ca) = constantAllocation(ConstantAllocationContext.initial)
     q.copy(constants = ca.constants)

@@ -1,24 +1,19 @@
 package it
 
-import com.agilogy.simpledb.{Measures, Database}
-import com.agilogy.srdb.tx.NewTransaction
+import com.agilogy.simpledb._
 import org.scalatest.PrivateMethodTester
-//TODO: Avoid this import
-import com.agilogy.srdb.types.SimpleDbCursorReader._
 
 class MeasuresTest extends TestBase with PrivateMethodTester {
 
   import TestSchema._
-  import db._
+  import txController.inTransaction
 
   behavior of "database measurement"
-
-  implicit private val txConfig = NewTransaction
 
   val selectPlanets = createQuery[Planet]("select * from planets p")(p.reads).withoutParams
 
   ignore should "measure one database query" in {
-    val measurement = db.inTransaction {
+    val measurement = inTransaction {
       tx =>
         val (_, measurement) = Database.withMeasures {
           selectPlanets()(tx)
@@ -29,7 +24,7 @@ class MeasuresTest extends TestBase with PrivateMethodTester {
   }
 
   ignore should "measure several database queries" in {
-    db.inTransaction {
+    inTransaction {
       tx =>
         val (_, measurement) = Database.withMeasures {
           selectPlanets()(tx)
@@ -43,7 +38,7 @@ class MeasuresTest extends TestBase with PrivateMethodTester {
   }
 
   ignore should "restart measures for each taken measure" in {
-    db.inTransaction {
+    inTransaction {
       tx =>
         val (_, measurement1) = Database.withMeasures {
           selectPlanets()(tx)
@@ -65,7 +60,7 @@ class MeasuresTest extends TestBase with PrivateMethodTester {
   }
 
   ignore should "free memory after measure is performed" in {
-    db.inTransaction {
+    inTransaction {
       tx =>
         Database.withMeasures {
           selectPlanets()(tx)
@@ -80,7 +75,7 @@ class MeasuresTest extends TestBase with PrivateMethodTester {
   }
 
   ignore should "only measure queries performed during measure block when nested measures are taken" in {
-    db.inTransaction {
+    inTransaction {
       tx =>
         val (_, measurement) = Database.withMeasures {
           selectPlanets()(tx)

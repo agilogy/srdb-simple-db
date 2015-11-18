@@ -323,7 +323,7 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy{
   def coalesce[T](arg1: Expression[Option[T]], arg2: Expression[Option[T]], defaultValue: Expression[T]): CoalesceNotNullExpression[T] =
     CoalesceNotNullExpression(Seq(arg1, arg2), defaultValue)
 
-  def Null[T] = new NullExpression[T]
+  def Null[T]: NullExpression[T] = new NullExpression[T]
 
   def sum[T](c:Column[T]): AggregateExpression[T, c.positionalReader.Optional] = AggregateExpression("sum",c)
 

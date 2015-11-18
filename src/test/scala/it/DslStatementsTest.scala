@@ -2,23 +2,19 @@ package it
 
 import com.agilogy.simpledb._
 import com.agilogy.simpledb.dsl._
-import com.agilogy.srdb.tx.{TransactionController, NewTransaction}
-//TODO: Avoid this import
-import com.agilogy.srdb.types.SimpleDbCursorReader._
 
 class DslStatementsTest extends TestBase {
 
-
-  implicit val txConfig = NewTransaction
+  import txController.inTransaction
 
   behavior of "statements dsl"
 
-  val selectDepts = db.from(d).orderBy(d.name).select(d.*)(d.reads).withoutParams
+  val selectDepts = from(d).orderBy(d.name).select(d.*)(d.reads).withoutParams
 
   it should "build and execute a simple update statement" in {
-    db.inTransaction(tx => insertDepartments()(tx))
-    val stmt = db.update(d).set(d.active := false).where(d.city ==== "Vilafranca")
-    TransactionController.inTransaction(ds) {
+    inTransaction(tx => insertDepartments()(tx))
+    val stmt = update(d).set(d.active := false).where(d.city ==== "Vilafranca")
+    inTransaction {
       implicit tx =>
         stmt()
         val res = selectDepts()
@@ -29,9 +25,9 @@ class DslStatementsTest extends TestBase {
   }
 
   it should "build and execute a simple delete statement" in {
-    db.inTransaction(tx => insertDepartments()(tx))
-    val stmt = db.delete(d).where(d.city ==== "Vilafranca")
-    TransactionController.inTransaction(ds) {
+    inTransaction(tx => insertDepartments()(tx))
+    val stmt = delete(d).where(d.city ==== "Vilafranca")
+    inTransaction {
       implicit tx =>
         stmt()
         val res = selectDepts()
@@ -41,11 +37,11 @@ class DslStatementsTest extends TestBase {
   }
 
   it should "build and execute an insert statement" in {
-    db.inTransaction(tx => insertDepartments()(tx))
-    val stmt = db.insertInto(d).values(d.name := param(0), d.city := param(1), d.active := true)
+    inTransaction(tx => insertDepartments()(tx))
+    val stmt = insertInto(d).values(d.name := param(0), d.city := param(1), d.active := true)
       .andReadGeneratedKeys(d.id)
       .withParams[String, String]
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         stmt("d5", "Sant Pere Molanta")
         val res = selectDepts()
@@ -53,7 +49,7 @@ class DslStatementsTest extends TestBase {
         assert(res(3).name === "d5")
         assert(res(3).city === "Sant Pere Molanta")
         val id: Long = stmt.apply("d6", "Sant Pere Molanta")
-        val res2 = db.from(d).where(d.id ==== id).select(d.name, d.city).apply().head
+        val res2 = from(d).where(d.id ==== id).select(d.name, d.city).apply().head
         assert(res2 ===("d6", "Sant Pere Molanta"))
     }
   }

@@ -1,7 +1,5 @@
 package com.agilogy.simpledb.dsl
 
-import javax.sql.DataSource
-
 import com.agilogy.simpledb.schema.{Column, ForeignKey, Table}
 
 import com.agilogy.simpledb.dsl.Join._
@@ -73,38 +71,38 @@ case class JoinRelation(table: Table, joins: Seq[Join]) extends Relation {
   private[simpledb] override val allocateConstants: ConstantAllocation[Self] = ConstantAllocation.allocateAll(joins)(_.allocateConstants).map(js => this.copy(joins = js))
 }
 
-case class FromQueryPart(ds:DataSource, from:Relation) extends GeneratedSelectMethods{
+case class FromQueryPart(from:Relation) extends GeneratedSelectMethods{
 
-  protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(ds, from, True, columns, reads)
+  protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(from, True, columns, reads)
 
   val sql:String = from match {
     case NoRelation => ""
     case _ => "from " + from.sql
   }
 
-  def where(p: Predicate): WhereQueryPart = WhereQueryPart(ds, from, p)
+  def where(p: Predicate): WhereQueryPart = WhereQueryPart(from, p)
 
-  def groupBy(columns: Column[_]*): GroupByQueryPart = GroupByQueryPart(ds, from, True, columns)
+  def groupBy(columns: Column[_]*): GroupByQueryPart = GroupByQueryPart(from, True, columns)
 
-  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(ds, from, where = True, groupBy = Seq.empty, orderBy = criteria)
+  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(from, where = True, groupBy = Seq.empty, orderBy = criteria)
 }
 
-case class WhereQueryPart(ds:DataSource, joinQueryPart: Relation, where: Predicate) extends GeneratedSelectMethods {
+case class WhereQueryPart(joinQueryPart: Relation, where: Predicate) extends GeneratedSelectMethods {
 
-  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(ds, joinQueryPart, where, groupBy = Seq.empty, orderBy = criteria)
+  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(joinQueryPart, where, groupBy = Seq.empty, orderBy = criteria)
 
   val sql = joinQueryPart.sql + " where " + where.sql
 
-  protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(ds, joinQueryPart, where, columns, reads)
+  protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(joinQueryPart, where, columns, reads)
 
-  def groupBy(columns: Column[_]*): GroupByQueryPart = GroupByQueryPart(ds, joinQueryPart, where, columns)
+  def groupBy(columns: Column[_]*): GroupByQueryPart = GroupByQueryPart(joinQueryPart, where, columns)
 }
 
-case class GroupByQueryPart(ds:DataSource, joinQueryPart: Relation, where: Predicate, groupBy: Seq[Column[_]]) extends GeneratedSelectMethods {
-  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(ds, joinQueryPart, where, groupBy, orderBy = criteria)
+case class GroupByQueryPart(joinQueryPart: Relation, where: Predicate, groupBy: Seq[Column[_]]) extends GeneratedSelectMethods {
+  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(joinQueryPart, where, groupBy, orderBy = criteria)
 
   override protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] =
-    DslQuery.build(ds, joinQueryPart, where, columns, reads, groupBy)
+    DslQuery.build(joinQueryPart, where, columns, reads, groupBy)
 }
 
 sealed trait OrderByOrder {
@@ -137,8 +135,8 @@ object OrderByCriterion {
   implicit def fromPair(pair: (Column[_], OrderByOrder)): OrderByCriterion = OrderByCriterion(pair._1, pair._2)
 }
 
-case class OrderByQueryPart(ds:DataSource, joinQueryPart: Relation, where: Predicate, groupBy: Seq[Column[_]], orderBy: Seq[OrderByCriterion]) extends GeneratedSelectMethods {
-  override protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(ds, joinQueryPart, where, columns, reads, groupBy, orderBy)
+case class OrderByQueryPart(joinQueryPart: Relation, where: Predicate, groupBy: Seq[Column[_]], orderBy: Seq[OrderByCriterion]) extends GeneratedSelectMethods {
+  override protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(joinQueryPart, where, columns, reads, groupBy, orderBy)
 }
 
 

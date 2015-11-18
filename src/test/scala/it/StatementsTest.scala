@@ -1,22 +1,14 @@
 package it
 
 import com.agilogy.simpledb._
-import com.agilogy.simpledb.dsl._
-import com.agilogy.srdb.tx.{TransactionController, NewTransaction}
-//TODO: Avoid this import
-import com.agilogy.srdb.types.SimpleDbCursorReader._
 
 class StatementsTest extends TestBase {
 
-  import TestSchema._
-
-  implicit val txConfig = NewTransaction
-
-  import db._
+  import txController.inTransaction
 
   it should "execute delete statements" in {
     val deletePlanetByName = createStatement("delete from planets where name = :0").withParams[String](writer1[String])
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         deletePlanetByName("venus")
         val venus = selectPlanetByName("venus").headOption
@@ -27,7 +19,7 @@ class StatementsTest extends TestBase {
 
   it should "execute statements with 1 positional parameter" in {
     val updateAllPlanetsPosition = createStatement("update planets set position = :0").withParams[Int]
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         updateAllPlanetsPosition(23)
         val selectAllPlanets = createQuery("select * from planets")(p.reads).withoutParams
@@ -38,7 +30,7 @@ class StatementsTest extends TestBase {
 
   it should "execute statements with 2 positional parameters" in {
     val updatePlanetPosition = createStatement("update planets set position = :1 where name = :0").withParams[String,Int]
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         updatePlanetPosition("venus", 99)
         val venus = selectPlanetByName("venus").head
@@ -48,7 +40,7 @@ class StatementsTest extends TestBase {
 
   it should "execute statements without declaring parameters" in {
     val updatePlanetPosition = createStatement("update planets set position = :1 where name = :0")
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         updatePlanetPosition("venus", 99)
         val venus = selectPlanetByName("venus").head
@@ -60,7 +52,7 @@ class StatementsTest extends TestBase {
 
   ignore should "report primary key constraint violations" in{
     val insertPlanet = createStatement("insert into planets(name,position) values (:0,:1)").withParams[String,Int]
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         val dke = intercept[UniqueKeyViolationException] {
           insertPlanet("venus", 22)
@@ -72,7 +64,7 @@ class StatementsTest extends TestBase {
 
   ignore should "report unique key constraint violations" in{
     val insertPlanet = createStatement("insert into planets(name,position) values (:0,:1)").withParams[String,Int]
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         val dke = intercept[UniqueKeyViolationException] {
           insertPlanet("wrong earth", 2)
@@ -85,7 +77,7 @@ class StatementsTest extends TestBase {
 
   ignore should "report unique key constraint violations when getting hte generated key" in{
     val insertDepartment = createStatement("insert into departments(name,city) values (:0,:1)").withParams[String,String]
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         insertDepartment("sales", "Vilafranca")
         val dke = intercept[UniqueKeyViolationException] {
@@ -97,10 +89,10 @@ class StatementsTest extends TestBase {
   }
 
   ignore should "report foreign key violations when inserting" in{
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
         val fke = intercept[ForeignKeyViolationException] {
-          insert(e, e.name := "Jordi", e.departmentId := 345l)
+          Ops.insert(e, e.name := "Jordi", e.departmentId := 345l)
         }
         assert(fke.violationType === ReferencedKeyNotPresent)
         assert(fke.referencingTable === "employees")
@@ -111,12 +103,12 @@ class StatementsTest extends TestBase {
   }
 
   ignore should "report foreign key violations when deleting" in{
-    TransactionController.inTransaction(ds) {
+    inTransaction {
       implicit tx =>
-        val d1 = insertAndGetKey(d, d.name := "d1")(d.id)
-        insert(e, e.name := "Jordi", e.departmentId := d1)
+        val d1 = Ops.insertAndGetKey(d, d.name := "d1")(d.id)
+        Ops.insert(e, e.name := "Jordi", e.departmentId := d1)
         val fke = intercept[ForeignKeyViolationException] {
-          delete(d, d.id ==== d1)
+          Ops.delete(d, d.id ==== d1)
         }
         assert(fke.violationType === KeyStillReferenced)
         assert(fke.referencingTable === "employees")

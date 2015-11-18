@@ -3,30 +3,26 @@ package com.agilogy.simpledb
 import com.agilogy.simpledb.schema._
 import com.agilogy.simpledb.dsl._
 import com.agilogy.srdb.tx.Transaction
-import com.agilogy.srdb.types.{DbCursorReader, DbReader, SimpleDbCursorReader}
-//TODO: Avoid this import
-import SimpleDbCursorReader._
+import com.agilogy.srdb.types.{DbCursorReader, DbReader}
 
-trait DatabaseOperations {
-
-  val db: Database
+trait DatabaseOperations extends StatementFactory{
 
   private val getId = reader1(DbLong)
 
   private def toPredicate(values: Seq[ColumnAssignment[_]]): Predicate = values.foldLeft[Predicate](True) { case (p, ca) => p and (ca.c nullSafeEq ca.value)}
 
   def insert(into: Table, values: ColumnAssignment[_]*)(implicit tx: Transaction): Unit = {
-    val stmt = db.insertInto(into).values(values: _*).withoutParams
+    val stmt = insertInto(into).values(values: _*).withoutParams
     stmt()
   }
 
   def insertAndGetKey[RT](into: Table, values: ColumnAssignment[_]*)(readKey: DbReader[RT] = getId)(implicit tx: Transaction): RT = {
-    val stmt = db.insertInto(into).values(values: _*).andReadGeneratedKeys(readKey).withoutParams
+    val stmt = insertInto(into).values(values: _*).andReadGeneratedKeys(readKey).withoutParams
     stmt()
   }
 
   def insertIfNotFound(into: Table, values: ColumnAssignment[_]*)(implicit tx: Transaction): Unit = {
-      val find = db.from(into).where(toPredicate(values)).select(count(values.head.c).as("count"))
+      val find = from(into).where(toPredicate(values)).select(count(values.head.c).as("count"))
       if (find().head == 0) {
         insert(into, values: _*)
       }
@@ -42,14 +38,12 @@ trait DatabaseOperations {
   }
 
   def insertIfNotFoundAndGetKey[RT](into: Table, values: ColumnAssignment[_]*)(readKey: DbReader[RT] = getId)(implicit tx: Transaction): RT = {
-    db.inTransaction {
-      implicit tx =>
         val res = select(into, toPredicate(values))(readKey).headOption
         res match{
           case Some(k) => k
           case None => insertAndGetKey(into, values: _*)(readKey)
         }
-    }
+
   }
 
   def insertOrUpdate(into: Table, values: ColumnAssignment[_]*)(implicit tx: Transaction): Unit = {
@@ -57,13 +51,9 @@ trait DatabaseOperations {
   }
 
   def insertOrUpdate(into:Table, key:Seq[Column[_]],values: ColumnAssignment[_]*)(implicit tx: Transaction): Unit = {
-    db.inTransaction {
-      implicit tx =>
         val valuesToUpdate = values.filterNot(v => key.contains(v.c))
         val updated = update(into, finderPredicate(key, values), valuesToUpdate: _*)
         if (updated == 0) insert(into, values: _*)
-    }
-
   }
 
   def insertOrUpdateAndGetKey[RT](into: Table, values: ColumnAssignment[_]*)(readKey: DbReader[RT] = getId)(implicit tx: Transaction): RT = {
@@ -71,8 +61,6 @@ trait DatabaseOperations {
   }
 
   def insertOrUpdateAndGetKey[RT](into: Table, key:Seq[Column[_]], values: ColumnAssignment[_]*)(readKey: DbReader[RT])(implicit tx: Transaction): RT = {
-    db.inTransaction {
-      implicit tx =>
         val valuesToUpdate = values.filterNot(v => key.contains(v.c))
         val where = finderPredicate(key, values)
         val updated = update(into, where, valuesToUpdate :_*)
@@ -81,26 +69,27 @@ trait DatabaseOperations {
         } else {
           select(into, where)(readKey).head
         }
-    }
   }
 
 
   def update(table: Table, where: Predicate, set: ColumnAssignment[_]*)(implicit tx: Transaction): Int = {
     require(set.nonEmpty,"Can't update with an empty set of changes")
-    val stmt = db.update(table).set(set: _*).where(where).withoutParams
+    val stmt = dsl.update(table).set(set: _*).where(where).withoutParams
     stmt()
   }
 
   def delete(table: Table, where: Predicate = True)(implicit tx: Transaction): Int = {
-    val stmt = db.delete(table).where(where).withoutParams
+    val stmt = dsl.delete(table).where(where).withoutParams
     stmt()
   }
 
   def select[RT](from: Relation, where: Predicate, groupBy: Seq[Column[_]] = Seq.empty, orderBy: Seq[OrderByCriterion] = Seq.empty, columns: Seq[Column[_]] = Seq.empty)(reads: DbCursorReader[RT])(implicit tx: Transaction): Seq[RT] = {
 
     val actualColumns = if (columns.isEmpty) from.* else columns
-    val q = db.from(from).where(where).groupBy(groupBy: _*).orderBy(orderBy: _*).select(actualColumns)(reads)
+    val q = dsl.from(from).where(where).groupBy(groupBy: _*).orderBy(orderBy: _*).select(actualColumns)(reads)
     q()(tx)
   }
 
 }
+
+object Ops extends DatabaseOperations

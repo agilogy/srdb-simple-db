@@ -1,19 +1,16 @@
 package com.agilogy.simpledb
 
-import javax.sql.DataSource
-
 import com.agilogy.simpledb.Database.measure
 import com.agilogy.simpledb.Utilities._
-import com.agilogy.srdb.tx.{Transaction, TransactionController}
+import com.agilogy.srdb.tx.Transaction
 import com.agilogy.srdb.types.{DbReader, AtomicDbWriter}
-import com.agilogy.srdb.Srdb._
+import com.agilogy.srdb.Srdb
 
-trait DatabaseStatementFactory {
-  val ds: DataSource
+trait StatementFactory {
 
-  def createStatement(query:String): TextRawStatement[Int] = new TextRawStatement[Int](ds, query)(NoStatementResultReader)
+  def createStatement(query:String): TextRawStatement[Int] = new TextRawStatement[Int](query)(NoStatementResultReader)
 
-  def createStatement[RT](query:String, keyReader: StatementResultReader[RT]): TextRawStatement[RT] = new TextRawStatement[RT](ds, query)(keyReader)
+  def createStatement[RT](query:String, keyReader: StatementResultReader[RT]): TextRawStatement[RT] = new TextRawStatement[RT](query)(keyReader)
 
 }
 
@@ -22,7 +19,6 @@ case object NoStatementResultReader extends StatementResultReader[Int]
 case class ActualStatementResultReader[T](reader:DbReader[T]) extends StatementResultReader[T]
 
 trait RawStatement[RT] extends StatementWithParams[RT] {
-  val ds:DataSource
   def sql:String
   def preAssignedParameters:Seq[ParameterValue[_]]
   val keyReader: StatementResultReader[RT]
@@ -41,8 +37,8 @@ trait RawStatement[RT] extends StatementWithParams[RT] {
 //    logger.debug( """%s <- %s""".format(sql, actualArgs.mkString(", ")))
     val (jdbcQuery, orderedArgs) = translateNamedParameters(sql, params, actualArgs)
     keyReader match {
-      case ActualStatementResultReader(r) => TransactionController.inTransaction(ds)(tx => updateGeneratedKeys(jdbcQuery)(r)(tx.conn,orderedArgs.map(_.toArg)))
-      case _ => TransactionController.inTransaction(ds)(tx => update(jdbcQuery)(tx.conn,orderedArgs.map(_.toArg)).asInstanceOf[RT])
+      case ActualStatementResultReader(r) => Srdb.updateGeneratedKeys(jdbcQuery)(r)(tx.conn,orderedArgs.map(_.toArg))
+      case _ => Srdb.update(jdbcQuery)(tx.conn,orderedArgs.map(_.toArg)).asInstanceOf[RT]
     }
   }
 
@@ -53,7 +49,7 @@ trait RawStatement[RT] extends StatementWithParams[RT] {
   override val self: RawStatement[RT] = this
 }
 
-case class TextRawStatement[RT](ds: DataSource, sql: String)(val keyReader: StatementResultReader[RT])
+case class TextRawStatement[RT](sql: String)(val keyReader: StatementResultReader[RT])
 extends RawStatement[RT]{
   override val preAssignedParameters: Seq[ParameterValue[_]] = Seq.empty
 }

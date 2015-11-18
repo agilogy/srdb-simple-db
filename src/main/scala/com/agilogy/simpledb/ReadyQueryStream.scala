@@ -27,8 +27,8 @@ trait QueryStream[RT] {
   def collect[RT2](pf: PartialFunction[RT, RT2]): QueryStream[RT2] = this.filter(pf.isDefinedAt).map(pf)
 }
 
-case class ReadyQueryStream[RT] private[simpledb](q: ReadyQuery[RT]) extends QueryStream[RT] {
-  override def foreach(f: (RT) => Unit): Unit = TransactionController.inTransaction(q.ds){
+case class ReadyQueryStream[RT] private[simpledb](q: ReadyQuery[RT])(implicit txController:TransactionController) extends QueryStream[RT] {
+  override def foreach(f: (RT) => Unit): Unit = txController.inTransaction{
     implicit tx =>
     q.foreach(f)(tx,LimitedFetchSize(100)) // MAGIC NUMBER!!!!!!
   } (NewTransaction)

@@ -1,27 +1,27 @@
 package it
 
 import com.agilogy.simpledb._
-import com.agilogy.simpledb.dsl._
 import com.agilogy.srdb.tx.NewTransaction
 
 import scala.util.control.NonFatal
 
+//TODO: Move to srdb-tx
 class TransactionTest extends TestBase {
 
   import TestSchema._
-  import db._
+  import txController.inTransaction
 
   behavior of "Transaction"
 
   it should "execute multiple statements in a transaction" in {
     val updatePlanetPosition = createStatement("update planets set position = :1 where name = :0").withParams[String,Int]
-    db.inTransaction {
+    inTransaction {
       implicit tx =>
         updatePlanetPosition("venus", 5)
-        db.insert(p, p.name := "earth", p.position := 3)
+        Ops.insert(p, p.name := "earth", p.position := 3)
         tx.rollback()
     }(NewTransaction)
-    db.inTransaction {
+    inTransaction {
       implicit tx =>
         assert(selectPlanetByName("venus").head.position === 2)
         assert(selectPlanetByName("earth").headOption === None)
@@ -32,9 +32,9 @@ class TransactionTest extends TestBase {
 
   it should "allow nested inTransaction blocks" in {
     //TODO: Check that everything gets indeed executed in a single transaction
-    db.inTransaction {
+    inTransaction {
       tx =>
-        db.inTransaction {
+        inTransaction {
           implicit tx2 =>
             assert(tx2 === tx)
         }(tx)
@@ -50,21 +50,21 @@ class TransactionTest extends TestBase {
     // what logging implementation to use, and then have that implementation setup and tuned to
     // set ERROR level for ...NewPooledConnection.
 
-    db.inTransaction {
+    inTransaction {
       implicit tx =>
-        db.insert(p, p.name := "Earth", p.position := 3)
+        Ops.insert(p, p.name := "Earth", p.position := 3)
         tx.withSavepoint {
-          db.insert(p, p.name := "Earth", p.position := 3)
+          Ops.insert(p, p.name := "Earth", p.position := 3)
           // throws a SQLException that marks the connection as INVALID
         } {
           case s: DbException =>
-            db.insert(p, p.name := "Mercury", p.position := 1)
+            Ops.insert(p, p.name := "Mercury", p.position := 1)
           // tx.withSavePoint causes the Connection to be valid
           // again but c3p0 already marked it as invalid and the
           // mark is not removed.
         }
         tx.withSavepoint {
-          db.insert(p, p.name := "Earth", p.position := 3)
+          Ops.insert(p, p.name := "Earth", p.position := 3)
           // throws a SQLException once again. This time, because the
           // connection is marked as invalid in c3p0 the exception handling
           // in c3p0 logs.warn("Another error has occurred...").
@@ -72,7 +72,7 @@ class TransactionTest extends TestBase {
           // reviewed if the exception is traced again.
         } {
           case s: DbException =>
-            db.insert(p, p.name := "Venus", p.position := 2)
+            Ops.insert(p, p.name := "Venus", p.position := 2)
         }
     }(NewTransaction)
   }
@@ -82,14 +82,14 @@ class TransactionTest extends TestBase {
 
   they should "allow me to continue using a transaction after a failure" in {
     val p = Planets("p")
-    db.inTransaction {
+    inTransaction {
       implicit tx =>
-        db.insert(p, p.name := "Earth", p.position := 3)
+        Ops.insert(p, p.name := "Earth", p.position := 3)
         tx.withSavepoint {
-          db.insert(p, p.name := "Earth", p.position := 3)
+          Ops.insert(p, p.name := "Earth", p.position := 3)
         } {
           case NonFatal(_) =>
-            db.insert(p, p.name := "Mercury", p.position := 1)
+            Ops.insert(p, p.name := "Mercury", p.position := 1)
         }
 
         val m = selectPlanetByName("Mercury").head
@@ -99,10 +99,10 @@ class TransactionTest extends TestBase {
 
   they should "not mess things up when there are no errors" in {
     val p = Planets("p")
-    db.inTransaction {
+    inTransaction {
       implicit tx =>
         tx.withSavepoint {
-          db.insert(p, p.name := "Earth", p.position := 3)
+          Ops.insert(p, p.name := "Earth", p.position := 3)
         } {
           case NonFatal(t) =>
             throw t;
@@ -116,13 +116,13 @@ class TransactionTest extends TestBase {
 
   ignore should "not rollback to the savepoint if the exceptions is not in the catch block of withSavepoint" in {
     val p = Planets("p")
-    db.inTransaction {
+    inTransaction {
       implicit tx =>
 
-        db.insert(p, p.name := "Earth", p.position := 3)
+        Ops.insert(p, p.name := "Earth", p.position := 3)
         val duplicateKeyException = intercept[Exception] {
           tx.withSavepoint {
-            db.insert(p, p.name := "Earth", p.position := 3)
+            Ops.insert(p, p.name := "Earth", p.position := 3)
           } {
             case NonFatal(t) if t.getMessage == "This is not a real message" =>
               fail("withSavepoint should not give the catch block a different exception than the one that occurred")
@@ -131,7 +131,7 @@ class TransactionTest extends TestBase {
         assert(duplicateKeyException.getMessage.contains("duplicate key value violates unique constraint"))
 
         val txAbortedException = intercept[Exception] {
-          db.insert(p, p.name := "Mercury", p.position := 1)
+          Ops.insert(p, p.name := "Mercury", p.position := 1)
         }
         assert(txAbortedException.getMessage.contains("current transaction is aborted"))
     }(NewTransaction)
