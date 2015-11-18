@@ -2,10 +2,12 @@ package com.agilogy.simpledb.dsl
 
 import javax.sql.DataSource
 
-import com.agilogy.simpledb.ResultSetReads
 import com.agilogy.simpledb.schema.{Column, ForeignKey, Table}
 
 import com.agilogy.simpledb.dsl.Join._
+import com.agilogy.srdb.types.DbCursorReader
+
+import scala.language.implicitConversions
 
 case class Join(table: Table, on: Predicate, isLeft: Boolean) {
 
@@ -56,13 +58,13 @@ case class JoinRelation(table: Table, joins: Seq[Join]) extends Relation {
 
   val sql: String = "from " + aliasedTable(table) + (if (joins.isEmpty) "" else " ") + joins.map(_.sql).mkString(" ")
 
-  def join(rightTable: Table, on: Predicate) = JoinRelation(table, joins :+ Join.join(rightTable, on))
+  def join(rightTable: Table, on: Predicate): JoinRelation = JoinRelation(table, joins :+ Join.join(rightTable, on))
 
-  def join(rightTable: Table, on: ForeignKey) = JoinRelation(table, joins :+ Join.join(rightTable, on = on.joinOnPredicate(rightTable)))
+  def join(rightTable: Table, on: ForeignKey): JoinRelation = JoinRelation(table, joins :+ Join.join(rightTable, on = on.joinOnPredicate(rightTable)))
 
-  def leftJoin(rightTable: Table, on: Predicate) = JoinRelation(table, joins :+ Join.leftJoin(rightTable, on))
+  def leftJoin(rightTable: Table, on: Predicate): JoinRelation = JoinRelation(table, joins :+ Join.leftJoin(rightTable, on))
 
-  def leftJoin(rightTable: Table, on: ForeignKey) = JoinRelation(table, joins :+ Join.leftJoin(rightTable, on.joinOnPredicate(rightTable)))
+  def leftJoin(rightTable: Table, on: ForeignKey): JoinRelation = JoinRelation(table, joins :+ Join.leftJoin(rightTable, on.joinOnPredicate(rightTable)))
 
   override def `*`: Seq[Column[_]] = table.* ++ joins.flatMap(_.*)
 
@@ -73,35 +75,35 @@ case class JoinRelation(table: Table, joins: Seq[Join]) extends Relation {
 
 case class FromQueryPart(ds:DataSource, from:Relation) extends GeneratedSelectMethods{
 
-  protected def query[RT](columns: Seq[SelectedElement[_]], reads: ResultSetReads[RT]): DslQuery[RT] = DslQuery.build(ds, from, True, columns, reads)
+  protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(ds, from, True, columns, reads)
 
   val sql:String = from match {
     case NoRelation => ""
     case _ => "from " + from.sql
   }
 
-  def where(p: Predicate) = WhereQueryPart(ds, from, p)
+  def where(p: Predicate): WhereQueryPart = WhereQueryPart(ds, from, p)
 
-  def groupBy(columns: Column[_]*) = GroupByQueryPart(ds, from, True, columns)
+  def groupBy(columns: Column[_]*): GroupByQueryPart = GroupByQueryPart(ds, from, True, columns)
 
-  def orderBy(criteria: OrderByCriterion*) = OrderByQueryPart(ds, from, where = True, groupBy = Seq.empty, orderBy = criteria)
+  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(ds, from, where = True, groupBy = Seq.empty, orderBy = criteria)
 }
 
 case class WhereQueryPart(ds:DataSource, joinQueryPart: Relation, where: Predicate) extends GeneratedSelectMethods {
 
-  def orderBy(criteria: OrderByCriterion*) = OrderByQueryPart(ds, joinQueryPart, where, groupBy = Seq.empty, orderBy = criteria)
+  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(ds, joinQueryPart, where, groupBy = Seq.empty, orderBy = criteria)
 
   val sql = joinQueryPart.sql + " where " + where.sql
 
-  protected def query[RT](columns: Seq[SelectedElement[_]], reads: ResultSetReads[RT]): DslQuery[RT] = DslQuery.build(ds, joinQueryPart, where, columns, reads)
+  protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(ds, joinQueryPart, where, columns, reads)
 
-  def groupBy(columns: Column[_]*) = GroupByQueryPart(ds, joinQueryPart, where, columns)
+  def groupBy(columns: Column[_]*): GroupByQueryPart = GroupByQueryPart(ds, joinQueryPart, where, columns)
 }
 
 case class GroupByQueryPart(ds:DataSource, joinQueryPart: Relation, where: Predicate, groupBy: Seq[Column[_]]) extends GeneratedSelectMethods {
-  def orderBy(criteria: OrderByCriterion*) = OrderByQueryPart(ds, joinQueryPart, where, groupBy, orderBy = criteria)
+  def orderBy(criteria: OrderByCriterion*): OrderByQueryPart = OrderByQueryPart(ds, joinQueryPart, where, groupBy, orderBy = criteria)
 
-  override protected def query[RT](columns: Seq[SelectedElement[_]], reads: ResultSetReads[RT]): DslQuery[RT] =
+  override protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] =
     DslQuery.build(ds, joinQueryPart, where, columns, reads, groupBy)
 }
 
@@ -136,7 +138,7 @@ object OrderByCriterion {
 }
 
 case class OrderByQueryPart(ds:DataSource, joinQueryPart: Relation, where: Predicate, groupBy: Seq[Column[_]], orderBy: Seq[OrderByCriterion]) extends GeneratedSelectMethods {
-  override protected def query[RT](columns: Seq[SelectedElement[_]], reads: ResultSetReads[RT]): DslQuery[RT] = DslQuery.build(ds, joinQueryPart, where, columns, reads, groupBy, orderBy)
+  override protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(ds, joinQueryPart, where, columns, reads, groupBy, orderBy)
 }
 
 

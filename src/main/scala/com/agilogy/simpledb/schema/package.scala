@@ -1,10 +1,11 @@
 package com.agilogy.simpledb
 
-import scala.language.implicitConversions
+import com.agilogy.srdb.types.AtomicNamedDbReader
 
+import scala.language.implicitConversions
 
 package object schema {
 
-  implicit def columnToKeyReader[T](c:Column[T]):(Row => T) = _.get(c)
+  implicit def columnToReader[T](c:Column[T]): AtomicNamedDbReader[T] = c.reader
 
 }

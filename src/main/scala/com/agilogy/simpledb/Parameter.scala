@@ -1,37 +1,30 @@
 package com.agilogy.simpledb
 
-import java.sql.PreparedStatement
+import com.agilogy.srdb.Argument
+import com.agilogy.srdb.types.AtomicDbWriter
 
-case class Parameter[T](name: String)(implicit val dbWrites: DbWrites[T]) {
-  def set(value: T): ParameterValue[T] = SimpleParameterValue(this, value)
+case class Parameter[T](name: String)(implicit val dbWrites: AtomicDbWriter[T]) {
+  def set(value: T): ParameterValue[T] = ParameterValue(this, value)
 }
 
 object Parameter{
-  def apply[T](i:Int)(implicit dbWrites: DbWrites[T]):Parameter[T] = Parameter(i.toString)(dbWrites)
+  def apply[T](i:Int)(implicit dbWrites: AtomicDbWriter[T]):Parameter[T] = Parameter(i.toString)(dbWrites)
 }
 
-trait ParameterValue[T] {
-  val parameter: Parameter[T]
-  val value: T
+case class ParameterValue[T] private[simpledb](parameter: Parameter[T], value: T){
 
-  private[simpledb] def set(s: PreparedStatement, pos: Int) = {
-    parameter.dbWrites.set(s, pos, value)
+  private[simpledb] def getJdbcPlaceHolder:String = parameter.dbWrites match {
+    case i:InClauseValuesDbWriter[_] =>  InClauseValuesDbWriter.getJdbcPlaceholderFor(value.asInstanceOf[Iterable[_]].size)
+    case _ => "?"
   }
 
-  private[simpledb] def getJdbcPlaceHolder = parameter.dbWrites.getJdbcPlaceHolderFor(value)
+  def toArg: Argument = (ps,pos) => parameter.dbWrites.set(ps,pos,value)
 
 }
 
-case class SimpleParameterValue[T] private[simpledb](parameter: Parameter[T], value: T) extends ParameterValue[T]
-
-//case class ColumnValue[T] private[simpledb](column: Column[T], value: T) extends ParameterValue[T] {
-//  override val parameter: Parameter[T] = new Parameter[T](column.name)(column.dbType)
-//  def asAssignment = ColumnAssignment(column,Syntax.const(value)(column.dbType))
-//}
-
-case class PositionalArgument[T](value:T, dbWrites:DbWrites[T])
+case class PositionalArgument[T](value:T, dbWrites:AtomicDbWriter[T])
 
 object PositionalArgument{
-  implicit def fromValue[T](v:T)(implicit dbWrites:DbWrites[T]) = PositionalArgument(v,dbWrites)
+  implicit def fromValue[T](v:T)(implicit dbWrites:AtomicDbWriter[T]): PositionalArgument[T] = PositionalArgument(v,dbWrites)
 }
 

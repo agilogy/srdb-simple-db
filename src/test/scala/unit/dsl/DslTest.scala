@@ -9,6 +9,8 @@ import com.agilogy.simpledb.dsl._
 import it.TestSchema.Employees
 import org.postgresql.jdbc2.optional.SimpleDataSource
 import org.scalatest.FlatSpec
+//TODO: Avoid this import
+import com.agilogy.srdb.types.SimpleDbCursorReader._
 
 class DslTest extends FlatSpec {
 
@@ -16,7 +18,7 @@ class DslTest extends FlatSpec {
 
   val db = Database(mockDs)
 
-  implicit val uriDbType = text.map[URI](u => u.toString)(s => new URI(s))
+  implicit val uriDbType = DbString.xmap[URI](s => new URI(s),_.toString)
 
   case class Person(id: Long, name: String, age: Int, departmentId: Long, motherId: Long)
 
@@ -35,7 +37,7 @@ class DslTest extends FlatSpec {
     val deptFk = foreignKey(departmentId, references = Departments().id)
     val motherFK = foreignKey(motherId, id)
 
-    val reads = reader(row => row.get(name))
+    val reads = reader1(name.columnType)
     override val primaryKey: Seq[Column[_]] = Seq(id)
   }
 
@@ -45,11 +47,9 @@ class DslTest extends FlatSpec {
     val id = notNull[Long]("id")
     val name = notNull[String]("name")
 
-    val reads = reader(row => row.get(name))
+    val reads = reader1(name.columnType)
     override val primaryKey: Seq[Column[_]] = Seq(id)
   }
-
-  import com.agilogy.simpledb.dsl.Syntax._
 
   behavior of "expressions"
 
@@ -64,7 +64,7 @@ class DslTest extends FlatSpec {
 
   ignore should "support user type constants" in {
     //TODO: Fix this one
-    assert(new URI("/a").sql === "'/a'")
+//    assert(new URI("/a").sql === "'/a'")
   }
 
   they should "support parameters" in {
@@ -113,8 +113,8 @@ class DslTest extends FlatSpec {
 
   they should "support the 'in' operator with a constant value" in {
     val p = People("p")
-    assert((p.name in Seq("john","jane")).sql === "p.name in ('john', 'jane')")
-    assert((p.age in Seq(18, 19)).sql === "p.age in (18, 19)")
+    assert((p.name in ("john","jane")).sql === "p.name in ('john','jane')")
+    assert((p.age in (18, 19)).sql === "p.age in (18,19)")
   }
 
   they should "support the 'in' operator with a paramter" in {
@@ -143,14 +143,14 @@ class DslTest extends FlatSpec {
   it should "build simple select queries" in {
     val d = Departments("d")
     val selectDepts = db.from(d).where(d.id ==== 3l).select(d.*)(d.reads)
-    assert(selectDepts.sql === "select d.id as d_id, d.name as d_name from departments d where (d.id = 3)")
+    assert(selectDepts.sql === "select d.id, d.name from departments d where (d.id = 3)")
   }
 
   behavior of "joins syntax"
 
-  private val allPAndDFields = " p.id as p_id, p.name as p_name, p.age as p_age, p.dept_id as p_dept_id, " +
-    "p.mother_id as p_mother_id, p.inactive as p_inactive, p.deleted as p_deleted, p.uri as p_uri, p.head_of as p_head_of, " +
-    "d.id as d_id, d.name as d_name "
+  private val allPAndDFields = " p.id, p.name, p.age, p.dept_id, " +
+    "p.mother_id, p.inactive, p.deleted, p.uri, p.head_of, " +
+    "d.id, d.name "
 
   it should "build join queries using a predicate" in {
     val (p, d) = (People("p"), Departments("d"))
@@ -164,7 +164,7 @@ class DslTest extends FlatSpec {
     val (p, d) = (People("p"), Departments("d"))
     val joinPeopleDepts = db.from(p.leftJoin(d, p.departmentId ==== d.id))
     val selectPD = joinPeopleDepts.where(p.age >= 50).select(p.id,d.id)
-    assert(selectPD.sql === "select p.id as p_id, d.id as d_id " +
+    assert(selectPD.sql === "select p.id, d.id " +
       "from people p left join departments d on (p.dept_id = d.id) where (p.age >= 50)")
 
   }
@@ -180,10 +180,10 @@ class DslTest extends FlatSpec {
 
     val s = db.from(c.join(m, c.motherFK)).select(c.* ++ m.*)(c.reads.join(m.reads))
 
-    assert(s.sql === "select c.id as c_id, c.name as c_name, c.age as c_age, c.dept_id as c_dept_id, " +
-      "c.mother_id as c_mother_id, c.inactive as c_inactive, c.deleted as c_deleted, c.uri as c_uri, c.head_of as c_head_of, " +
-      "m.id as m_id, m.name as m_name, m.age as m_age, m.dept_id as m_dept_id, m.mother_id as m_mother_id, m.inactive as m_inactive, " +
-      "m.deleted as m_deleted, m.uri as m_uri, m.head_of as m_head_of " +
+    assert(s.sql === "select c.id, c.name, c.age, c.dept_id, " +
+      "c.mother_id, c.inactive, c.deleted, c.uri, c.head_of, " +
+      "m.id, m.name, m.age, m.dept_id, m.mother_id, m.inactive, " +
+      "m.deleted, m.uri, m.head_of " +
       "from people c join people m on (c.mother_id = m.id)")
   }
 
@@ -191,8 +191,8 @@ class DslTest extends FlatSpec {
     val (d, e) = (Departments("d"), Employees("e"))
 
     val s = db.from(e.join(d, e.departmentId ==== d.id)).groupBy(d.name).select(d.name)
-    assert(s.sql === "select d.name as d_name from employees e join departments d on (e.department_id = d.id) group by d.name")
-    assert(s.sql === "select d.name as d_name from employees e join departments d on (e.department_id = d.id) group by d.name")
+    assert(s.sql === "select d.name from employees e join departments d on (e.department_id = d.id) group by d.name")
+    assert(s.sql === "select d.name from employees e join departments d on (e.department_id = d.id) group by d.name")
     val s2 = db.from(e.join(d, e.departmentId ==== d.id)).where(True).groupBy(d.name).select(d.name)
     assert(s2.sql === s.sql)
   }
@@ -200,13 +200,13 @@ class DslTest extends FlatSpec {
   it should "build queries with order by clause" in {
     val (d, e) = (Departments("d"), Employees("e"))
     val s1 = db.from(e).orderBy(e.departmentId, e.name -> Desc).select(e.name)
-    assert(s1.sql === "select e.name as e_name from employees e order by e.department_id, e.name desc")
+    assert(s1.sql === "select e.name from employees e order by e.department_id, e.name desc")
     val s2 = db.from(e.join(d, e.departmentId ==== d.id)).orderBy(d.name, e.name -> Desc).select(e.name)
-    assert(s2.sql === "select e.name as e_name from employees e join departments d on (e.department_id = d.id) order by d.name, e.name desc")
+    assert(s2.sql === "select e.name from employees e join departments d on (e.department_id = d.id) order by d.name, e.name desc")
     val s3 = db.from(e).where(e.departmentId ==== 4l).orderBy(e.departmentId, e.name -> Desc).select(e.name)
-    assert(s3.sql === "select e.name as e_name from employees e where (e.department_id = 4) order by e.department_id, e.name desc")
+    assert(s3.sql === "select e.name from employees e where (e.department_id = 4) order by e.department_id, e.name desc")
     val s4 = db.from(e).groupBy(e.departmentId, e.name).orderBy(e.departmentId, e.name).select(e.departmentId, e.name)
-    assert(s4.sql === "select e.department_id as e_department_id, e.name as e_name from employees e group by e.department_id, e.name order by e.department_id, e.name")
+    assert(s4.sql === "select e.department_id, e.name from employees e group by e.department_id, e.name order by e.department_id, e.name")
   }
 
   behavior of "update"
@@ -241,11 +241,17 @@ class DslTest extends FlatSpec {
 
   they should "be identified to be passed as parameters when they are text" in {
     val d = Departments("d")
-    val q = db.from(d).where(d.name ==== "d1" and d.name < "abc").select(d.name)
-    assert(q.sql === "select d.name as d_name from departments d where ((d.name = :c0) and (d.name < :c1))")
+    val q = db.from(d).where(d.name ==== "--drop table employees" and d.name < "--boooh!").select(d.name)
+    assert(q.sql === "select d.name from departments d where ((d.name = :c0) and (d.name < :c1))")
     assert(q.constants.size === 2)
-    assert(q.constants(0).v === "d1")
-    assert(q.constants(1).v === "abc")
+    assert(q.constants(0).v === "--drop table employees")
+    assert(q.constants(1).v === "--boooh!")
   }
 
+  they should "be rewritten as their values when they are whitelisted text" in {
+    val d = Departments("d")
+    val q = db.from(d).where(d.name ==== "d1" and d.name < "abc").select(d.name)
+    assert(q.sql === "select d.name from departments d where ((d.name = 'd1') and (d.name < 'abc'))")
+    assert(q.constants.size === 0)
+  }
 }

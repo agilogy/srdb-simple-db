@@ -1,12 +1,14 @@
 package it
 
-import com.agilogy.simpledb.SimpleDb._
-import Syntax._
-import com.agilogy.srdb.tx.NewTransaction
+import com.agilogy.simpledb._
+import com.agilogy.simpledb.dsl._
+import com.agilogy.srdb.tx.{TransactionConfig, TransactionController, NewTransaction}
 
 class AggregateFunctionsTest extends TestBase{
 
   import TestSchema._
+
+  implicit val txConfig:TransactionConfig = NewTransaction
 
   behavior of "aggregate functions"
 
@@ -23,26 +25,38 @@ class AggregateFunctionsTest extends TestBase{
 
   they should "calculate the sum function" in{
     insertPlanets()
-    val res = db.from(p).select(sum(p.position).as("a")).withoutParams()(NewTransaction).head
-    assert(res === Some(6))
+    TransactionController.inTransaction(ds){
+      implicit tx =>
+        val res = db.from(p).select(sum(p.position).as("a")).withoutParams().head
+        assert(res === Some(6))
+    }
   }
 
   they should "calculate the min function" in{
     insertPlanets()
-    val res = db.from(p).select(min(p.position).as("a")).withoutParams()(NewTransaction).head
-    assert(res === Some(1))
+    TransactionController.inTransaction(ds) {
+      implicit tx =>
+        val res = db.from(p).select(min(p.position).as("a")).withoutParams().head
+        assert(res === Some(1))
+    }
   }
 
   they should "calculate the max function" in{
     insertPlanets()
-    val res = db.from(p).select(max(p.position).as("a")).withoutParams()(NewTransaction).head
-    assert(res === Some(3))
+    TransactionController.inTransaction(ds) {
+      implicit tx =>
+        val res = db.from(p).select(max(p.position).as("a")).withoutParams().head
+        assert(res === Some(3))
+    }
   }
 
   they should "calculate the count function" in{
     insertPlanets()
-    val res = db.from(p).select(count(p.name).as("a")).withoutParams()(NewTransaction).head
-    assert(res === 3)
+    TransactionController.inTransaction(ds) {
+      implicit tx =>
+        val res = db.from(p).select(count(p.name).as("a")).withoutParams().head
+        assert(res === 3)
+    }
   }
 
 }

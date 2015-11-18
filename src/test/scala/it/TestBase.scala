@@ -1,8 +1,11 @@
 package it
 
 import com.agilogy.simpledb._
+import com.agilogy.srdb.tx.{NewTransaction, Transaction}
 import com.googlecode.flyway.core.Flyway
 import com.mchange.v2.c3p0.ComboPooledDataSource
+//TODO: Avoid this import
+import com.agilogy.srdb.types.SimpleDbCursorReader._
 
 import it.TestSchema._
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec}
@@ -41,7 +44,7 @@ trait TestBase extends FlatSpec with DatabaseUriConfig with BeforeAndAfterAll wi
 
   val deletePlanets = createStatement("delete from planets")
   val deleteDepartments = createStatement("delete from departments")
-  val selectPlanetByName = createQuery("select * from planets where name = :0")(planetReads).withParams(text)
+  val selectPlanetByName = createQuery("select * from planets where name = :0")(planetReads).withParams[String]
   val deleteEmployees = createStatement("delete from employees")
 
   val venus = Planet("venus", 2)

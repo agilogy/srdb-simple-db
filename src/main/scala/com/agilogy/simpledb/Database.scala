@@ -3,6 +3,7 @@ package com.agilogy.simpledb
 import javax.sql.DataSource
 
 import com.agilogy.simpledb.dsl.Syntax
+import com.agilogy.srdb.tx.{TransactionController, TransactionConfig, Transaction}
 
 class Database private(val ds: DataSource) extends DatabaseStatementFactory with DatabaseQueryFactory with DatabaseOperations with Syntax {
 

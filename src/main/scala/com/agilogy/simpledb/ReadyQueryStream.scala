@@ -1,5 +1,8 @@
 package com.agilogy.simpledb
 
+import com.agilogy.srdb.LimitedFetchSize
+import com.agilogy.srdb.tx.{TransactionController, NewTransaction}
+
 import scala.collection.mutable.ListBuffer
 
 trait QueryStream[RT] {
@@ -25,7 +28,10 @@ trait QueryStream[RT] {
 }
 
 case class ReadyQueryStream[RT] private[simpledb](q: ReadyQuery[RT]) extends QueryStream[RT] {
-  override def foreach(f: (RT) => Unit): Unit = q.foreach(f)(NewTransaction,LimitedFetchSize(100)) // MAGIC NUMBER!!!!!!
+  override def foreach(f: (RT) => Unit): Unit = TransactionController.inTransaction(q.ds){
+    implicit tx =>
+    q.foreach(f)(tx,LimitedFetchSize(100)) // MAGIC NUMBER!!!!!!
+  } (NewTransaction)
 }
 
 class EmptyQueryStream[RT] extends QueryStream[RT] {

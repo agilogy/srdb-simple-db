@@ -4,6 +4,7 @@ import javax.sql.DataSource
 
 import com.agilogy.simpledb.schema.{Column, Table}
 import com.agilogy.simpledb._
+import com.agilogy.srdb.types.DbReader
 
 trait Statement[RT] extends RawStatement[RT]{
   def constants:Seq[Constant[_]]
@@ -27,7 +28,6 @@ case class Update1(ds:DataSource, t: Table) {
 case class ColumnAssignment[T](c: Column[T], value: Expression[T]) {
   def sql: String = c.name + " = " + value.sql
   private[simpledb] def asPredicate = {
-    import com.agilogy.simpledb.dsl.Syntax._
     c ==== value
   }
   private[simpledb] val allocateConstants: ConstantAllocation[ColumnAssignment[T]] = value.allocateConstants.map(v => ColumnAssignment(c,v))
@@ -105,9 +105,7 @@ case class InsertStatement(ds:DataSource, t:Table, values:Seq[ColumnAssignment[_
 
   override def sql: String = s"insert into ${t.tableName} (${columnNames.mkString(",")}) values (${insertedValuesSql.mkString(",")})"
   
-  def andReadGeneratedKeys[T](f: Row => T) = InsertStatementWithResultReader(this,ActualStatementResultReader(f))
-
-  def andReadGeneratedKeys[T1](primaryKey:Column[T1]) = InsertStatementWithResultReader[T1](this,ActualStatementResultReader(_.get(primaryKey)))
+  def andReadGeneratedKeys[T](f: DbReader[T]): InsertStatementWithResultReader[T] = InsertStatementWithResultReader(this,ActualStatementResultReader(f))
 
 }
 

@@ -1,14 +1,13 @@
 package it
 
 import com.agilogy.srdb.tx.NewTransaction
-
+import com.agilogy.simpledb.dsl._
 
 class DslQueriesTest extends TestBase {
 
   behavior of "queries dsl"
 
   import TestSchema._
-  import com.agilogy.simpledb.dsl.Syntax._
 
   it should "build and execute a simple query" in {
     val e = Employees("e")

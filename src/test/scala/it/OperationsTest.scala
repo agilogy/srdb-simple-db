@@ -1,19 +1,21 @@
 package it
 
-import com.agilogy.simpledb.SimpleDb
-import com.agilogy.srdb.tx.NewTransaction
-import it.TestSchema.{Department, Departments, Planets}
-
-import SimpleDb._
-import Syntax._
+import com.agilogy.simpledb._
+import com.agilogy.simpledb.dsl._
+import com.agilogy.srdb.tx.{TransactionConfig, NewTransaction}
+import it.TestSchema.{Departments, Planets}
+//TODO: Avoid this import
+import com.agilogy.srdb.types.SimpleDbCursorReader._
 
 class OperationsTest extends TestBase {
 
   behavior of "inserts"
 
+  implicit val txConfig:TransactionConfig = NewTransaction
+
   import db._
 
-  val selectDepartments = createQuery[Department]("select * from departments d").withoutParams
+  val selectDepartments = createQuery("select * from departments d")(d.reads).withoutParams
 
   it should "insert" in {
     db.inTransaction {
@@ -22,7 +24,7 @@ class OperationsTest extends TestBase {
         val result = selectDepartments()
         assert(result.size === 1)
         assert(result(0).name === "devops")
-    }(NewTransaction)
+    }
   }
 
   it should "insert and return generated key" in {
@@ -38,18 +40,21 @@ class OperationsTest extends TestBase {
         assert(result(0).code === Some("devop"))
         assert(result(1).id === id1)
         assert(result(1).name === "administration")
-    }(NewTransaction)
+    }
   }
 
   it should "insert if not found" in {
+    db.inTransaction(tx => insert(d, d.name := "devops")(tx))
     db.inTransaction {
       implicit tx =>
-        insert(d, d.name := "devops")
         insertIfNotFound(d, d.name := "devops")
         assert(selectDepartments().size === 1)
         insertIfNotFound(d, d.name := "dept2")
+    }
+    db.inTransaction {
+      implicit tx =>
         assert(selectDepartments().size === 2)
-    }(NewTransaction)
+    }
   }
 
   it should "insert if not found and get key" in {
@@ -61,7 +66,7 @@ class OperationsTest extends TestBase {
         val newId: Long = insertIfNotFoundAndGetKey(d, d.name := "dept2")(d.id)
         assert(newId != existingId)
         assert(selectDepartments().size === 2)
-    }(NewTransaction)
+    }
   }
 
   behavior of "insert or update"
@@ -74,10 +79,10 @@ class OperationsTest extends TestBase {
         assert(selectPlanetByName("earth").head.position === 3)
         insertOrUpdate(p, p.name := "earth", p.position := 4)
         assert(selectPlanetByName("earth").head.position === 4)
-    }(NewTransaction)
+    }
   }
 
-  ignore should "insert or update and get key" in {
+  it should "insert or update and get key" in {
     val p = Planets("p")
     db.inTransaction {
       implicit tx =>
@@ -86,17 +91,20 @@ class OperationsTest extends TestBase {
         val id2 = insertOrUpdateAndGetKey(p, p.name := "earth", p.position := 4)(p.name)
         assert(selectPlanetByName("earth").head.position === 4)
         assert(id1 === id2)
-    }(NewTransaction)
+    }
   }
 
   behavior of "update"
 
   it should "update a table with some type checking" in {
     val p = Planets("p")
-    val affectedRows = update(p, p.position ==== 2, p.name := "Venus!!")(NewTransaction)
-    assert(affectedRows === 1)
-    val planet = selectPlanetByName("Venus!!")(NewTransaction).head
-    assert(planet.position === 2)
+    db.inTransaction {
+      implicit tx =>
+        val affectedRows = update(p, p.position ==== 2, p.name := "Venus!!")
+        assert(affectedRows === 1)
+        val planet = selectPlanetByName("Venus!!").head
+        assert(planet.position === 2)
+    }
   }
 
   behavior of "select"
@@ -108,7 +116,7 @@ class OperationsTest extends TestBase {
         insertDepartments()
         val result = db.select(d, (d.city ==== "Vilafranca") and d.active)(d.reads)
         assert(result.map(_.name).toSet === Set("d1", "d2"))
-    }(NewTransaction)
+    }
   }
 
   behavior of "None in conditions"
@@ -116,18 +124,23 @@ class OperationsTest extends TestBase {
   it should "select a row with an optional column with null value" in {
     val d = Departments("d")
     import d._
-    implicit val tx = NewTransaction
-    insert(d, id := 1l, name := "name", active := true, code := Null)
-    val rows = select(d, code nullSafeEq Null)(reader(row => true))
-    assert(rows.size === 1)
+    db.inTransaction {
+      implicit tx =>
+        insert(d, id := 1l, name := "name", active := true, code := Null)
+        //TODO Allow using the column directly
+        val rows = select(d, code nullSafeEq Null, columns=Seq(d.id))(d.id.reader)
+        assert(rows.size === 1)
+    }
   }
 
   it should "update a row with an optional column with null value" in {
     val d = Departments("d")
     import d._
-    implicit val tx = NewTransaction
-    insert(d, id := 1l, name := "name", active := true, code := Null)
-    val rows = update(d, code isNull, active := false)
-    assert(rows === 1)
+    db.inTransaction {
+      implicit tx =>
+        insert(d, id := 1l, name := "name", active := true, code := Null)
+        val rows = update(d, code.isNull, active := false)
+        assert(rows === 1)
+    }
   }
 }

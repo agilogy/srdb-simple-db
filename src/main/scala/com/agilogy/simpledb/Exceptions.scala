@@ -2,6 +2,8 @@ package com.agilogy.simpledb
 
 import java.sql.SQLException
 
+import com.agilogy.srdb.types.DbReader
+
 
 abstract class DbException extends RuntimeException {
   val sql: String
@@ -111,12 +113,12 @@ case class RowMappingException(sql: String, row: RowValue, cause: Throwable) ext
   override val args: Seq[ParameterValue[_]] = Seq.empty
 }
 
-case class ColumnReadException(sql: String, row: RowValue, column: String, dbReads: DbReads[_], optional: Boolean, cause: Throwable) extends DbException {
-  val msg = "Error reading %scolumn \"%s\" as %s in %s".format(if (optional) "" else "not null ", column, dbReads.toString, row)
+case class ColumnReadException(sql: String, row: RowValue, column: String, reader: DbReader[_], optional: Boolean, cause: Throwable) extends DbException {
+  val msg = "Error reading %scolumn \"%s\" as %s in %s".format(if (optional) "" else "not null ", column, reader.toString, row)
   override val args: Seq[ParameterValue[_]] = Seq.empty
 }
 
-case class NullColumnReadException(sql: String, row: RowValue, column: String, dbType: DbType[_]) extends DbException {
+case class NullColumnReadException(sql: String, row: RowValue, column: String, reader: DbReader[_]) extends DbException {
   val msg = "Error reading supposedly not null column \"%s\" cause the value is null in %s".format(column, row)
   val cause = null
   override val args: Seq[ParameterValue[_]] = Seq.empty

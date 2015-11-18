@@ -38,23 +38,40 @@ class ExpressionTest extends FlatSpec{
     val e6:Predicate = p.inactive <= true
     val e7:Predicate = p.inactive > true
     val e8:Predicate = p.inactive >= true
-    val e9:Predicate = p.inactive in Seq(true, false)
+    val e9:Predicate = p.inactive in (true, false)
     val e11:Predicate = p.inactive.isNull
   }
 
   // TODO review these tests
-  behavior of "seqs of expressions"
-  
-  ignore should "be a valid expression" in {
-//        val e10:Predicate = p.inactive in Seq(const(true), p.deleted)
+  behavior of "in expressions"
+
+  it should "accept predicates" in {
+    val res: Predicate = p.inactive in (true, p.deleted)
+    assert(res.sql === "p.inactive in (true,p.deleted)")
   }
-  
+
+  it should "accept constants as arguments" in {
+    val res = p.age in (17,18,19)
+    assert(res.sql === "p.age in (17,18,19)")
+    val res2 = p.age in Seq(17, 18, 19)
+    assert(res2.sql === res.sql)
+  }
+
+  it should "accept parameters as expressions" in {
+    val res = p.age in(param(0),param(1))
+    assert(res.sql === "p.age in (:0,:1)")
+  }
+
+  it should "accept a single parameter for all the expression" in {
+    val res = p.age in param[Seq[Int]](0)
+  }
+
   behavior of "sum aggregate function"
-  
-  it should "have an optional dbType" in {
+
+  ignore should "return an option of the summed type" in {
     val res:Query0[Option[Int]] = db.from(p).select(sum(p.age).as("ages")).withoutParams
 
-  } 
-  
+  }
+
 
 }

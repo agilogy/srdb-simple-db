@@ -19,10 +19,3 @@ trait Syntax {
 
 }
 
-object Syntax extends ExpressionSyntax{
-
-  val True = com.agilogy.simpledb.dsl.True
-  val False = com.agilogy.simpledb.dsl.False
-
-}
-
