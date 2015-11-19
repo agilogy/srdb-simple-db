@@ -1,7 +1,6 @@
-package com.agilogy.simpledb
-
 import java.net.URI
-import util.Properties
+
+import scala.util.Properties
 
 //TODO: This doesn't belong here, does it?
 trait DatabaseUriConfig {
