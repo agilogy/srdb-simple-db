@@ -4,7 +4,7 @@ private[dsl] case class ConstantAllocationContext(nextConstantIndex: Int, consta
 
 private[dsl] object ConstantAllocationContext {
   def initial: ConstantAllocationContext = ConstantAllocationContext(0, Seq.empty)
-  def apply(alreadyAllocatedConstants:Seq[Constant[_]]):ConstantAllocationContext = ConstantAllocationContext(alreadyAllocatedConstants.size,alreadyAllocatedConstants)
+  def apply(alreadyAllocatedConstants: Seq[Constant[_]]): ConstantAllocationContext = ConstantAllocationContext(alreadyAllocatedConstants.size, alreadyAllocatedConstants)
 }
 
 private[simpledb] case class ConstantAllocation[+T](f: ConstantAllocationContext => (T, ConstantAllocationContext)) {
@@ -40,8 +40,8 @@ private[simpledb] object ConstantAllocation {
         acc.flatMap(ss => af(se).map(sea => ss :+ sea))
     }
 
-  def allocateSelectConstants[T <: SelectedElement[_]](s: Seq[T]):ConstantAllocation[Seq[T]] = allocateAll(s)(_.allocateConstants.asInstanceOf[ConstantAllocation[T]])
-  
+  def allocateSelectConstants[T <: SelectedElement[_]](s: Seq[T]): ConstantAllocation[Seq[T]] = allocateAll(s)(_.allocateConstants.asInstanceOf[ConstantAllocation[T]])
+
   def allocateRelationConstants[T <: Relation](r: T): ConstantAllocation[T] = r.allocateConstants.asInstanceOf[ConstantAllocation[T]]
 
   def allocateExpressionConstants[T <: Expression[_]](e: T): ConstantAllocation[T] = e.allocateConstants.asInstanceOf[ConstantAllocation[T]]

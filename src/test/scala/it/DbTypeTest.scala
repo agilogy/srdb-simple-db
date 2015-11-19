@@ -80,76 +80,76 @@ class DbTypeTest extends TestBase {
   behavior of "date and time types"
 
   ignore should "write DateTime params and read timestamps from the db" in {
-//    val dwdt = new DummyWithDateTimes("dwdt")
-//    val now = new DateTime()
-//    val id: Long = db.insertAndGetKey(dwdt,dwdt.dateTimeColumn := Some(now))(dwdt.id)
-//    val res = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.dateTimeColumn).withoutParams().head.get
-//    assert(res === now)
+    //    val dwdt = new DummyWithDateTimes("dwdt")
+    //    val now = new DateTime()
+    //    val id: Long = db.insertAndGetKey(dwdt,dwdt.dateTimeColumn := Some(now))(dwdt.id)
+    //    val res = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.dateTimeColumn).withoutParams().head.get
+    //    assert(res === now)
   }
 
-  ignore  should "write DateTime params and read timestamps from the db when using different timezones" in {
-//    val dwdt = new DummyWithDateTimes("dwdt")
-//    val now = new DateTime().toDateTime(DateTimeZone.UTC)
-//    val id: Long = db.insertAndGetKey(dwdt,dwdt.dateTimeColumn := Some(now))(dwdt.id)
-//    val res = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.dateTimeColumn).withoutParams().head.get.toDateTime(DateTimeZone.UTC)
-//    assert(res === now)
+  ignore should "write DateTime params and read timestamps from the db when using different timezones" in {
+    //    val dwdt = new DummyWithDateTimes("dwdt")
+    //    val now = new DateTime().toDateTime(DateTimeZone.UTC)
+    //    val id: Long = db.insertAndGetKey(dwdt,dwdt.dateTimeColumn := Some(now))(dwdt.id)
+    //    val res = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.dateTimeColumn).withoutParams().head.get.toDateTime(DateTimeZone.UTC)
+    //    assert(res === now)
   }
 
-  ignore  should "write DateTime params and read timestamps from the db when using different timezones as a parameter" in {
-//    val dwdt = new DummyWithDateTimes("dwdt")
-//    val now = new DateTime().toDateTime(DateTimeZone.UTC)
-//    val insert = db.insertInto(dwdt).values(dwdt.dateTimeColumn := param(0)).andReadGeneratedKeys(dwdt.id).withParams(dwdt.dateTimeColumn.reader)
-//    val id = insert(Some(now))
-//    val res = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.dateTimeColumn).withoutParams().head.get.toDateTime(DateTimeZone.UTC)
-//    assert(res === now)
+  ignore should "write DateTime params and read timestamps from the db when using different timezones as a parameter" in {
+    //    val dwdt = new DummyWithDateTimes("dwdt")
+    //    val now = new DateTime().toDateTime(DateTimeZone.UTC)
+    //    val insert = db.insertInto(dwdt).values(dwdt.dateTimeColumn := param(0)).andReadGeneratedKeys(dwdt.id).withParams(dwdt.dateTimeColumn.reader)
+    //    val id = insert(Some(now))
+    //    val res = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.dateTimeColumn).withoutParams().head.get.toDateTime(DateTimeZone.UTC)
+    //    assert(res === now)
   }
 
-  ignore  should "support timestamp constants and read them as DateTime" in {
-//    val now = new DateTime()
-//    val res: DateTime = fromNoTable.select(now.as("a")).withoutParams().head
-//    assert(res === now)
+  ignore should "support timestamp constants and read them as DateTime" in {
+    //    val now = new DateTime()
+    //    val res: DateTime = fromNoTable.select(now.as("a")).withoutParams().head
+    //    assert(res === now)
   }
 
-  ignore  should "write LocalDate params and read dates from the db" in {
-//    val dwdt = new DummyWithDateTimes("dwdt")
-//    val d = new LocalDate(2012, 2, 29)
-//    db.inTransaction {
-//      implicit tx =>
-//        val id: Long = db.insertAndGetKey(dwdt, dwdt.localDateColumn := Some(d))(dwdt.id)(tx)
-//        val res: LocalDate = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.localDateColumn).withoutParams()(tx).head.get
-//        assert(res === d)
-//    }
+  ignore should "write LocalDate params and read dates from the db" in {
+    //    val dwdt = new DummyWithDateTimes("dwdt")
+    //    val d = new LocalDate(2012, 2, 29)
+    //    db.inTransaction {
+    //      implicit tx =>
+    //        val id: Long = db.insertAndGetKey(dwdt, dwdt.localDateColumn := Some(d))(dwdt.id)(tx)
+    //        val res: LocalDate = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.localDateColumn).withoutParams()(tx).head.get
+    //        assert(res === d)
+    //    }
   }
 
-  ignore  should "support date constants and read them as LocalDate" in {
-//    val d = new LocalDate(2012, 2, 29)
-//    val res: LocalDate = fromNoTable.select(d.as("a")).withoutParams().head
-//    assert(res === d)
+  ignore should "support date constants and read them as LocalDate" in {
+    //    val d = new LocalDate(2012, 2, 29)
+    //    val res: LocalDate = fromNoTable.select(d.as("a")).withoutParams().head
+    //    assert(res === d)
   }
 
-  ignore  should "write LocalTime params and read time from the db" in {
-//    val dwdt = new DummyWithDateTimes("dwdt")
-//    val t = new LocalTime(23, 52, 26, 114)
-//    inTransaction {
-//      implicit tx =>
-//        val id: Long = db.insertAndGetKey(dwdt, dwdt.localTimeColumn := Some(t))(dwdt.id)
-//        val res: LocalTime = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.localTimeColumn).withoutParams().head.get
-//        assert(res === t)
-//    }
+  ignore should "write LocalTime params and read time from the db" in {
+    //    val dwdt = new DummyWithDateTimes("dwdt")
+    //    val t = new LocalTime(23, 52, 26, 114)
+    //    inTransaction {
+    //      implicit tx =>
+    //        val id: Long = db.insertAndGetKey(dwdt, dwdt.localTimeColumn := Some(t))(dwdt.id)
+    //        val res: LocalTime = db.from(dwdt).where(dwdt.id ==== id).select(dwdt.localTimeColumn).withoutParams().head.get
+    //        assert(res === t)
+    //    }
   }
 
-  ignore  should "support time constants and read them as LocalTime" in {
-//    val t = new LocalTime(23, 52, 26, 114)
-//    val q = fromNoTable.select(t.as("a"))
-//    val res: LocalTime = q.withoutParams().head
-//    assert(res === t)
+  ignore should "support time constants and read them as LocalTime" in {
+    //    val t = new LocalTime(23, 52, 26, 114)
+    //    val q = fromNoTable.select(t.as("a"))
+    //    val res: LocalTime = q.withoutParams().head
+    //    assert(res === t)
   }
 
   //TODO: Move to column type tests belong
   they should "support mapped constants" in {
-    case class Name(v:String)
+    case class Name(v: String)
     // TODO: Make xmap return an instance of a new class MappedColumnType so that we can automatically infer the constant strategy
-    implicit val nameColumnType = DbString.xmap[Name](Name.apply,_.v)
+    implicit val nameColumnType = DbString.xmap[Name](Name.apply, _.v)
     implicit val nameConstantStrategy = stringConstantStrategy.map[Name](_.v)
     val john = Name("john :98")
     inTransaction {

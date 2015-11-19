@@ -3,14 +3,14 @@ package it
 import com.agilogy.simpledb._
 import com.agilogy.simpledb.dsl._
 
-class AggregateFunctionsTest extends TestBase{
+class AggregateFunctionsTest extends TestBase {
 
   import TestSchema._
   import txController.inTransaction
 
   behavior of "aggregate functions"
 
-  private def insertPlanets():Unit = {
+  private def insertPlanets(): Unit = {
     val p = Planets("p")
     inTransaction {
       implicit tx =>
@@ -21,16 +21,16 @@ class AggregateFunctionsTest extends TestBase{
     }
   }
 
-  they should "calculate the sum function" in{
+  they should "calculate the sum function" in {
     insertPlanets()
-    inTransaction{
+    inTransaction {
       implicit tx =>
         val res = from(p).select(sum(p.position).as("a")).withoutParams().head
         assert(res === Some(6))
     }
   }
 
-  they should "calculate the min function" in{
+  they should "calculate the min function" in {
     insertPlanets()
     inTransaction {
       implicit tx =>
@@ -39,7 +39,7 @@ class AggregateFunctionsTest extends TestBase{
     }
   }
 
-  they should "calculate the max function" in{
+  they should "calculate the max function" in {
     insertPlanets()
     inTransaction {
       implicit tx =>
@@ -48,7 +48,7 @@ class AggregateFunctionsTest extends TestBase{
     }
   }
 
-  they should "calculate the count function" in{
+  they should "calculate the count function" in {
     insertPlanets()
     inTransaction {
       implicit tx =>

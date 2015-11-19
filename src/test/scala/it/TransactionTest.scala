@@ -77,7 +77,6 @@ class TransactionTest extends TestBase {
     }(NewTransaction)
   }
 
-
   behavior of "Savepoints"
 
   they should "allow me to continue using a transaction after a failure" in {
@@ -136,6 +135,5 @@ class TransactionTest extends TestBase {
         assert(txAbortedException.getMessage.contains("current transaction is aborted"))
     }(NewTransaction)
   }
-
 
 }

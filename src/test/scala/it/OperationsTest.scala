@@ -56,7 +56,7 @@ class OperationsTest extends TestBase {
     inTransaction {
       implicit tx =>
         val existingId = Ops.insertAndGetKey(d, d.name := "devops")(d.id)
-        val returnedId = Ops.insertIfNotFoundAndGetKey(d,d.name := "devops")(d.id)
+        val returnedId = Ops.insertIfNotFoundAndGetKey(d, d.name := "devops")(d.id)
         assert(returnedId === existingId)
         val newId: Long = Ops.insertIfNotFoundAndGetKey(d, d.name := "dept2")(d.id)
         assert(newId != existingId)
@@ -104,7 +104,6 @@ class OperationsTest extends TestBase {
 
   behavior of "select"
 
-
   it should "select by exact values of columns" in {
     inTransaction {
       implicit tx =>
@@ -123,7 +122,7 @@ class OperationsTest extends TestBase {
       implicit tx =>
         Ops.insert(d, id := 1l, name := "name", active := true, code := Null)
         //TODO Allow using the column directly
-        val rows = Ops.select(d, code nullSafeEq Null, columns=Seq(d.id))(d.id.reader)
+        val rows = Ops.select(d, code nullSafeEq Null, columns = Seq(d.id))(d.id.reader)
         assert(rows.size === 1)
     }
   }

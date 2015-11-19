@@ -14,7 +14,7 @@ class DslQueriesTest extends TestBase {
     inTransaction {
       implicit tx =>
         insertDepartmentsAndEmployees()
-        val selectEmployeesAndDepts = from(e).select(e.name, e.departmentId).map { case (en, dn) => s"Employee $en works at the department with id $dn"}.withoutParams
+        val selectEmployeesAndDepts = from(e).select(e.name, e.departmentId).map { case (en, dn) => s"Employee $en works at the department with id $dn" }.withoutParams
         val res = selectEmployeesAndDepts()
         assert(res === List("Employee emp1 works at the department with id 1", "Employee emp2 works at the department with id 1", "Employee emp3 works at the department with id 2"))
     }
@@ -24,7 +24,7 @@ class DslQueriesTest extends TestBase {
     inTransaction(tx => insertDepartmentsAndEmployees()(tx))
     inTransaction {
       implicit tx =>
-        val selectEmployeesAndDepts = from(e.join(d, e.departmentId ==== d.id)).select(e.name, d.name).map { case (en, dn) => s"Employee $en works at the department $dn"}.withoutParams
+        val selectEmployeesAndDepts = from(e.join(d, e.departmentId ==== d.id)).select(e.name, d.name).map { case (en, dn) => s"Employee $en works at the department $dn" }.withoutParams
         val res = selectEmployeesAndDepts()
         assert(res === List("Employee emp1 works at the department d1", "Employee emp2 works at the department d1", "Employee emp3 works at the department d2"))
     }
@@ -54,6 +54,5 @@ class DslQueriesTest extends TestBase {
         assert(res.contains("Vilafranca"))
     }
   }
-
 
 }

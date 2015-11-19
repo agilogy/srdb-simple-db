@@ -12,9 +12,9 @@ import org.scalatest.FlatSpec
 
 class DslTest extends FlatSpec {
 
-  val mockDs:DataSource = new SimpleDataSource
-  
-  implicit val uriDbType = DbString.xmap[URI](s => new URI(s),_.toString)
+  val mockDs: DataSource = new SimpleDataSource
+
+  implicit val uriDbType = DbString.xmap[URI](s => new URI(s), _.toString)
 
   case class Person(id: Long, name: String, age: Int, departmentId: Long, motherId: Long)
 
@@ -60,7 +60,7 @@ class DslTest extends FlatSpec {
 
   ignore should "support user type constants" in {
     //TODO: Fix this one
-//    assert(new URI("/a").sql === "'/a'")
+    //    assert(new URI("/a").sql === "'/a'")
   }
 
   they should "support parameters" in {
@@ -109,7 +109,7 @@ class DslTest extends FlatSpec {
 
   they should "support the 'in' operator with a constant value" in {
     val p = People("p")
-    assert((p.name in ("john","jane")).sql === "p.name in ('john','jane')")
+    assert((p.name in ("john", "jane")).sql === "p.name in ('john','jane')")
     assert((p.age in (18, 19)).sql === "p.age in (18,19)")
   }
 
@@ -159,7 +159,7 @@ class DslTest extends FlatSpec {
   it should "build left join queries using a predicate" in {
     val (p, d) = (People("p"), Departments("d"))
     val joinPeopleDepts = from(p.leftJoin(d, p.departmentId ==== d.id))
-    val selectPD = joinPeopleDepts.where(p.age >= 50).select(p.id,d.id)
+    val selectPD = joinPeopleDepts.where(p.age >= 50).select(p.id, d.id)
     assert(selectPD.sql === "select p.id, d.id " +
       "from people p left join departments d on (p.dept_id = d.id) where (p.age >= 50)")
 
@@ -168,7 +168,7 @@ class DslTest extends FlatSpec {
   it should "build join queries using a foreign key" in {
     val (p, d) = (People("p"), Departments("d"))
     val s = from(p.join(d, p.deptFk)).select(p.* ++ d.*)(p.reads.join(d.reads))
-    assert(s.sql === "select" + allPAndDFields +  "from people p join departments d on (p.dept_id = d.id)")
+    assert(s.sql === "select" + allPAndDFields + "from people p join departments d on (p.dept_id = d.id)")
   }
 
   it should "build join queries using the same table with 2 different aliases" in {
@@ -187,7 +187,6 @@ class DslTest extends FlatSpec {
     val (d, e) = (Departments("d"), Employees("e"))
 
     val s = from(e.join(d, e.departmentId ==== d.id)).groupBy(d.name).select(d.name)
-    assert(s.sql === "select d.name from employees e join departments d on (e.department_id = d.id) group by d.name")
     assert(s.sql === "select d.name from employees e join departments d on (e.department_id = d.id) group by d.name")
     val s2 = from(e.join(d, e.departmentId ==== d.id)).where(True).groupBy(d.name).select(d.name)
     assert(s2.sql === s.sql)
@@ -217,7 +216,7 @@ class DslTest extends FlatSpec {
 
   behavior of "delete"
 
-  it should "build a delete statement" in{
+  it should "build a delete statement" in {
     val d = Departments("d")
     val stmt = delete(d)
     assert(stmt.sql === "delete from departments d")

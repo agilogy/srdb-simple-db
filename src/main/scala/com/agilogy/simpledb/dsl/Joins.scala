@@ -1,6 +1,6 @@
 package com.agilogy.simpledb.dsl
 
-import com.agilogy.simpledb.schema.{Column, ForeignKey, Table}
+import com.agilogy.simpledb.schema.{ Column, ForeignKey, Table }
 
 import com.agilogy.simpledb.dsl.Join._
 import com.agilogy.srdb.types.DbCursorReader
@@ -10,7 +10,7 @@ import scala.language.implicitConversions
 case class Join(table: Table, on: Predicate, isLeft: Boolean) {
 
   val sql = s"${if (isLeft) "left join" else "join"} ${aliasedTable(table)} on ${on.sql}"
-  def `*`:Seq[Column[_]] = table.*
+  def `*`: Seq[Column[_]] = table.*
   private[simpledb] val parameters: Seq[Param[_]] = on.parameters
 
   private[simpledb] val allocateConstants: ConstantAllocation[Join] = on.allocateConstants.map(p => this.copy(on = p))
@@ -24,21 +24,19 @@ object Join {
   private[simpledb] def leftJoin(table: Table, on: Predicate) = Join(table, on, isLeft = true)
 }
 
-trait Relation{
+trait Relation {
 
-
-  private[simpledb] val parameters:Seq[Param[_]]
-  def sql:String
+  private[simpledb] val parameters: Seq[Param[_]]
+  def sql: String
   def `*`: Seq[Column[_]]
 
-  private[simpledb] type Self
+  private[simpledb]type Self
   private[simpledb] val allocateConstants: ConstantAllocation[Self]
 }
 
-object Relation{
-  /*implicit*/ private[dsl] def table2Relation(t:Table):JoinRelation = JoinRelation(t, Seq.empty)
+object Relation {
+  /*implicit*/ private[dsl] def table2Relation(t: Table): JoinRelation = JoinRelation(t, Seq.empty)
 }
-
 
 case object NoRelation extends Relation {
 
@@ -48,7 +46,7 @@ case object NoRelation extends Relation {
 
   override private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
 
-  private[simpledb] type Self = NoRelation.type
+  private[simpledb]type Self = NoRelation.type
   private[simpledb] override val allocateConstants: ConstantAllocation[Self] = ConstantAllocation.empty(this)
 }
 
@@ -67,15 +65,15 @@ case class JoinRelation(table: Table, joins: Seq[Join]) extends Relation {
   override def `*`: Seq[Column[_]] = table.* ++ joins.flatMap(_.*)
 
   private[simpledb] override val parameters: Seq[Param[_]] = joins.flatMap(_.parameters)
-  private[simpledb] type Self = JoinRelation
+  private[simpledb]type Self = JoinRelation
   private[simpledb] override val allocateConstants: ConstantAllocation[Self] = ConstantAllocation.allocateAll(joins)(_.allocateConstants).map(js => this.copy(joins = js))
 }
 
-case class FromQueryPart(from:Relation) extends GeneratedSelectMethods{
+case class FromQueryPart(from: Relation) extends GeneratedSelectMethods {
 
   protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(from, True, columns, reads)
 
-  val sql:String = from match {
+  val sql: String = from match {
     case NoRelation => ""
     case _ => "from " + from.sql
   }
@@ -138,5 +136,4 @@ object OrderByCriterion {
 case class OrderByQueryPart(joinQueryPart: Relation, where: Predicate, groupBy: Seq[Column[_]], orderBy: Seq[OrderByCriterion]) extends GeneratedSelectMethods {
   override protected def query[RT](columns: Seq[SelectedElement[_]], reads: DbCursorReader[RT]): DslQuery[RT] = DslQuery.build(joinQueryPart, where, columns, reads, groupBy, orderBy)
 }
-
 

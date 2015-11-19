@@ -61,12 +61,11 @@ class QueryStreamsTest extends TestBase {
     }
     val selectDepartments = createQuery("select * from departments d")(d.reads).withoutParams
     val deptsStream = selectDepartments.stream().collect {
-      case Department(_,name,"Barcelona",_,_) => s"$name - Barcelona"
-      case Department(_,"d1","Vilafranca",_,_) => "d1 - Penedès"
+      case Department(_, name, "Barcelona", _, _) => s"$name - Barcelona"
+      case Department(_, "d1", "Vilafranca", _, _) => "d1 - Penedès"
     }
     val result = deptsStream.toSeq
-    assert(result === List("d1 - Penedès","d3 - Barcelona"))
+    assert(result === List("d1 - Penedès", "d3 - Barcelona"))
   }
-
 
 }

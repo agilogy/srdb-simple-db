@@ -1,19 +1,19 @@
 package com.agilogy.simpledb.dsl
 
-import org.joda.time.{DateTime, DateTimeZone}
+import org.joda.time.{ DateTime, DateTimeZone }
 
 trait ConstantStrategy[-T] {
   def isSecure(value: T): Boolean = true
 
   def constant(value: T): String
 
-  def secureConstant(value:T):Option[String] = if(isSecure(value)) Some(constant(value)) else None
+  def secureConstant(value: T): Option[String] = if (isSecure(value)) Some(constant(value)) else None
 
-  def map[T2](f:T2 => T):ConstantStrategy[T2] = MappedConstantStrategy(this,f)
+  def map[T2](f: T2 => T): ConstantStrategy[T2] = MappedConstantStrategy(this, f)
 }
 
-object ConstantStrategy{
-  implicit def optionalConstantStrategy[T:ConstantStrategy]:ConstantStrategy[Option[T]] = new ConstantStrategy[Option[T]] {
+object ConstantStrategy {
+  implicit def optionalConstantStrategy[T: ConstantStrategy]: ConstantStrategy[Option[T]] = new ConstantStrategy[Option[T]] {
 
     private val cs = implicitly[ConstantStrategy[T]]
 
@@ -42,7 +42,6 @@ case object AsText extends ConstantStrategy[String] {
 //    s"$typeName '$value'"
 //}
 
-
 //case object TimestampTZConstantStrategy extends ConstantStrategy[DateTime]{
 //
 //  override def isSecure(value: DateTime): Boolean = value.isAfter(new DateTime(1990,1,1,0,0,0,DateTimeZone.UTC))
@@ -63,7 +62,7 @@ case class MappedConstantStrategy[T1, T2](cs: ConstantStrategy[T1], f: T2 => T1)
   override def isSecure(value: T2): Boolean = cs.isSecure(f(value))
 }
 
-case object NoConstants extends ConstantStrategy[Any]{
+case object NoConstants extends ConstantStrategy[Any] {
 
   override def isSecure(value: Any): Boolean = false
 

@@ -16,7 +16,6 @@ class StatementsTest extends TestBase {
     }
   }
 
-
   it should "execute statements with 1 positional parameter" in {
     val updateAllPlanetsPosition = createStatement("update planets set position = :0").withParams[Int]
     inTransaction {
