@@ -1,12 +1,12 @@
 package it
 
 import com.agilogy.simpledb._
-import com.agilogy.srdb.tx.{TransactionConfig, TransactionController, NewTransaction, Transaction}
+import com.agilogy.srdb.tx.{ TransactionConfig, TransactionController, NewTransaction, Transaction }
 import com.googlecode.flyway.core.Flyway
 import com.mchange.v2.c3p0.ComboPooledDataSource
 
 import it.TestSchema._
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec}
+import org.scalatest.{ BeforeAndAfterAll, BeforeAndAfterEach, FlatSpec }
 
 trait TestBase extends FlatSpec with DatabaseUriConfig with BeforeAndAfterAll with BeforeAndAfterEach {
 
@@ -27,18 +27,18 @@ trait TestBase extends FlatSpec with DatabaseUriConfig with BeforeAndAfterAll wi
     res
   }
 
-  override def beforeAll():Unit =  {
+  override def beforeAll(): Unit = {
     migrations.clean()
     migrations.migrate()
   }
 
-  override def afterAll(): Unit ={
+  override def afterAll(): Unit = {
     ds.close()
   }
 
   val txController = new TransactionController(ds)
 
-  implicit val txConfig:TransactionConfig = NewTransaction
+  implicit val txConfig: TransactionConfig = NewTransaction
 
   val deletePlanets = createStatement("delete from planets")
   val deleteDepartments = createStatement("delete from departments")
@@ -65,8 +65,7 @@ trait TestBase extends FlatSpec with DatabaseUriConfig with BeforeAndAfterAll wi
     Ops.insert(e, e.name := "emp3", e.departmentId := dept2)
   }
 
-
-  override def beforeEach() {
+  override def beforeEach() = {
     txController.inTransaction {
       implicit tx =>
         deletePlanets()

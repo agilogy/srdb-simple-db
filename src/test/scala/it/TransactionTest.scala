@@ -1,6 +1,7 @@
 package it
 
 import com.agilogy.simpledb._
+import com.agilogy.srdb.exceptions.DbException
 import com.agilogy.srdb.tx.NewTransaction
 
 import scala.util.control.NonFatal
@@ -14,7 +15,7 @@ class TransactionTest extends TestBase {
   behavior of "Transaction"
 
   it should "execute multiple statements in a transaction" in {
-    val updatePlanetPosition = createStatement("update planets set position = :1 where name = :0").withParams[String,Int]
+    val updatePlanetPosition = createStatement("update planets set position = :1 where name = :0").withParams[String, Int]
     inTransaction {
       implicit tx =>
         updatePlanetPosition("venus", 5)

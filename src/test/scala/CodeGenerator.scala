@@ -1,5 +1,5 @@
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path, Paths}
+import java.nio.file.{ Files, Path, Paths }
 
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
@@ -24,7 +24,7 @@ object CodeGenerator extends App {
 
   private def t(template: Int => String)(implicit idx: LoopCount) = (1 to idx.i).map(i => template(i)).mkString(",")
 
-  private def PTn(name:String="PT")(implicit idx: LoopCount): String = t(name + _)
+  private def PTn(name: String = "PT")(implicit idx: LoopCount): String = t(name + _)
 
   private def paramTypeParams()(implicit idx: LoopCount): String = t(i => s"paramType$i: DbWrites[PT$i]")
 
@@ -72,12 +72,10 @@ object CodeGenerator extends App {
   private def selectMethod(i: LoopCount) = {
     implicit val idx = i
     s"""  def select[RT,${PTn("T")}](${t(i => "c" + i + ": SelectedElement[T" + i + "]")}): DslQuery[(${PTn("T")})] =
-       |    query(Seq(${PTn("c")}),reader(row => (${t(i => "row.get(c" + i + ")") })))
+       |    query(Seq(${PTn("c")}),reader(row => (${t(i => "row.get(c" + i + ")")})))
        |
        |""".stripMargin
   }
-
-
 
   private def generateQueries(): String = {
     val sb = new StringBuilder()
@@ -88,7 +86,8 @@ object CodeGenerator extends App {
         |trait WithParams[RT]{
         |  self:Query[RT] =>
         |
-        |""".stripMargin)
+        |""".stripMargin
+    )
     (1 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(withParamsMethod(i))
@@ -110,14 +109,16 @@ object CodeGenerator extends App {
         |trait StatementWithParams[RT]{
         |  val self:RawStatement[RT]
         |
-        |""".stripMargin)
+        |""".stripMargin
+    )
     (1 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(withParamsStatementMethod(i))
     }
     sb.append(
       """}
-      """.stripMargin)
+      """.stripMargin
+    )
     (1 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(statementClassCode(i))
@@ -125,7 +126,7 @@ object CodeGenerator extends App {
     sb.toString()
   }
 
-  private def generateSelectMethods():String = {
+  private def generateSelectMethods(): String = {
     val sb = new StringBuilder()
     sb.append(header)
     sb.append(
@@ -142,7 +143,8 @@ object CodeGenerator extends App {
         |
         |  def select[RT,T1](c1: SelectedElement[T1]): DslQuery[T1] = query(Seq(c1),reader(row => row.get(c1)))
         |
-        | """.stripMargin)
+        | """.stripMargin
+    )
     (2 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(selectMethod(i))
@@ -150,7 +152,8 @@ object CodeGenerator extends App {
     sb.append(
       """
         |}
-        | """.stripMargin)
+        | """.stripMargin
+    )
     sb.toString()
   }
 

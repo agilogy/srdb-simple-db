@@ -1,6 +1,6 @@
 package com.agilogy.simpledb.schema
 
-import com.agilogy.simpledb.dsl.{SelectedElement, ConstantAllocation, Param}
+import com.agilogy.simpledb.dsl.{ SelectedElement, ConstantAllocation, Param }
 import com.agilogy.srdb.types._
 
 class PrimaryKey[T](val columns: Column[_]*)
@@ -32,7 +32,6 @@ abstract class Table {
     addColumn(Column.optional(this, name))
   }
 
-
   protected[this] def notNull[T](name: String)(implicit columnType: ColumnType[T]): NotNullColumn[T] = {
     addColumn(Column.notNull(this, name))
   }
@@ -42,19 +41,19 @@ abstract class Table {
 
   def * : Seq[Column[_]] = columns.toSeq
 
-//  def reader[RT](f: (Row) => RT): SimpleReads[RT] = simpledb.reader(f)
+  //  def reader[RT](f: (Row) => RT): SimpleReads[RT] = simpledb.reader(f)
 
   val primaryKey: Seq[Column[_]]
 }
 
-trait Column[T] extends SelectedElement[T]  {
+trait Column[T] extends SelectedElement[T] {
 
-  val table:Table
-  
-  val name:String
-  
+  val table: Table
+
+  val name: String
+
   val writer: AtomicDbWriter[T]
-  
+
   override lazy val sql: String = table.alias + "." + name
 
   protected[simpledb] def tableAlias: Option[String]
@@ -66,26 +65,26 @@ trait Column[T] extends SelectedElement[T]  {
   val alias: Option[String] = None
 
   override private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
-  
+
   type self = Column[T]
-  
+
   override private[simpledb] val allocateConstants = ConstantAllocation.empty(this)
 }
 
-case class NotNullColumn[T] private[schema] (table: Table, name: String)(implicit val columnType: ColumnType[T]) extends Column[T]{
+case class NotNullColumn[T] private[schema] (table: Table, name: String)(implicit val columnType: ColumnType[T]) extends Column[T] {
 
   override protected[simpledb] def tableAlias: Option[String] = Some(table.alias)
 
   private[schema] def at[TT2 <: Table](t2: TT2): NotNullColumn[T] = NotNullColumn(t2, name)
 
-  def opt: OptionalColumn[T] = OptionalColumn(table,name)(columnType)
+  def opt: OptionalColumn[T] = OptionalColumn(table, name)(columnType)
 
   override lazy val positionalReader: AtomicNotNullPositionalDbReader[T] = reader1[T](columnType)
 
   lazy val writer: AtomicNotNullDbWriter[T] = writer1[T](columnType)
 }
 
-case class OptionalColumn[T] private[schema] (table: Table, name: String)(implicit val columnType: ColumnType[T]) extends Column[Option[T]]{
+case class OptionalColumn[T] private[schema] (table: Table, name: String)(implicit val columnType: ColumnType[T]) extends Column[Option[T]] {
 
   override protected[simpledb] def tableAlias: Option[String] = Some(table.alias)
 
@@ -105,13 +104,14 @@ object Column {
   }
 
   private[simpledb] def unknown(name: String): Column[Option[Any]] = {
-    val unknownColumnType: ColumnType[Any] = ColumnType.from[Any](v => v.asInstanceOf[AnyRef],
+    val unknownColumnType: ColumnType[Any] = ColumnType.from[Any](
+      v => v.asInstanceOf[AnyRef],
       (ps, pos, v) => ps.setObject(pos, v),
       (rs, pos) => rs.getObject(pos),
       (rs, name) => rs.getObject(name),
       JdbcType.Other
     )
-    OptionalColumn[Any](UnknownTable,name)(unknownColumnType)
+    OptionalColumn[Any](UnknownTable, name)(unknownColumnType)
   }
 
   private[schema] def optional[TT <: Table, T](table: TT, name: String)(implicit columnType: ColumnType[T]): OptionalColumn[T] = OptionalColumn(table, name)(columnType)

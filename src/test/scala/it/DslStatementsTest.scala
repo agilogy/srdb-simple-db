@@ -50,7 +50,7 @@ class DslStatementsTest extends TestBase {
         assert(res(3).city === "Sant Pere Molanta")
         val id: Long = stmt.apply("d6", "Sant Pere Molanta")
         val res2 = from(d).where(d.id ==== id).select(d.name, d.city).apply().head
-        assert(res2 ===("d6", "Sant Pere Molanta"))
+        assert(res2 === (("d6", "Sant Pere Molanta")))
     }
   }
 }

@@ -1,9 +1,5 @@
 package com.agilogy.simpledb
 
-import java.sql.{Connection, PreparedStatement, ResultSet, SQLException, Statement => JdbcStatement}
-
-import com.agilogy.utils.Logger
-
 private[simpledb] object Utilities {
 
   //TODO: This is dangerous. Keep an eye on better ways to detect parameters
@@ -12,16 +8,16 @@ private[simpledb] object Utilities {
 
   private def extractParameterNames(query: String): Seq[String] = paramsMatcher.findAllMatchIn(query).map(m => m.group(1)).toSeq
 
-  def checkNamedParameters[DT](query: String, parameterNames: Set[String]) {
+  def checkNamedParameters[DT](query: String, parameterNames: Set[String]): Unit = {
     val parameterNamesInQuery: Set[String] = extractParameterNames(query).toSet
-    val parametersNotFoundInQuery = parameterNames.diff(parameterNamesInQuery).map( """"%s"""".format(_))
+    val parametersNotFoundInQuery = parameterNames.diff(parameterNamesInQuery).map(""""%s"""".format(_))
     if (parametersNotFoundInQuery.nonEmpty) {
-      throw new IllegalArgumentException( """Some parameters where not found in the query "%s". Provided parameters: %s, parameters in query: %s, missing: %s""".
+      throw new IllegalArgumentException("""Some parameters where not found in the query "%s". Provided parameters: %s, parameters in query: %s, missing: %s""".
         format(query, parameterNames, parameterNamesInQuery, parametersNotFoundInQuery.mkString(",")))
     }
     val undefinedParameters = parameterNamesInQuery.diff(parameterNames)
     if (undefinedParameters.nonEmpty) {
-      throw new IllegalArgumentException( """The query "%s" contains some parameters with unknown types: %s""".format(query, undefinedParameters))
+      throw new IllegalArgumentException("""The query "%s" contains some parameters with unknown types: %s""".format(query, undefinedParameters))
     }
 
   }

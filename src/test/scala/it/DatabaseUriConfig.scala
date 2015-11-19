@@ -1,3 +1,5 @@
+package it
+
 import java.net.URI
 
 import scala.util.Properties
