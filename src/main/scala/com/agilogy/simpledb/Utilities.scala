@@ -22,7 +22,7 @@ private[simpledb] object Utilities {
 
   }
 
-  def translateNamedParameters(query: String, parameters: Seq[Parameter[_]], arguments: Seq[ParameterValue[_]]): (String, Seq[ParameterValue[_]]) = {
+  def translateNamedParameters(query: String, arguments: Seq[ParameterValue[_]]): (String, Seq[ParameterValue[_]]) = {
     val names = extractParameterNames(query)
     val orderedArguments = names.map(n => arguments.find(_.parameter.name == n).getOrElse(throw new IllegalArgumentException(s"Parameter $n not found in $arguments")))
     val jdbcQuery = paramsMatcher.replaceSomeIn(query, reMatch => {

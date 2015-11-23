@@ -30,11 +30,8 @@ trait RawStatement[RT] extends StatementWithParams[RT] {
 
   private[simpledb] def applyWithParams(arguments: ParameterValue[_]*)(implicit tx: Transaction): RT = {
     val actualArgs = arguments ++ preAssignedParameters
-    //    println("S " + sql + (if(actualArgs.isEmpty) "" else  "\n  " + actualArgs.map(pv => pv.parameter.name + " = " + pv.value).mkString(",") ))
-    val params = actualArgs.map(_.parameter)
-    checkNamedParameters(sql, params.map(_.name).toSet)
-    //    logger.debug( """%s <- %s""".format(sql, actualArgs.mkString(", ")))
-    val (jdbcQuery, orderedArgs) = translateNamedParameters(sql, params, actualArgs)
+    checkNamedParameters(sql, actualArgs.map(_.parameter).map(_.name).toSet)
+    val (jdbcQuery, orderedArgs) = translateNamedParameters(sql, actualArgs)
     keyReader match {
       case ActualStatementResultReader(r) => Srdb.updateGeneratedKeys(jdbcQuery)(r)(tx.conn, orderedArgs.map(_.toArg))
       case _ => Srdb.update(jdbcQuery)(tx.conn, orderedArgs.map(_.toArg)).asInstanceOf[RT]

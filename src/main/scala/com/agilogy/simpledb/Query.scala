@@ -65,7 +65,7 @@ private[simpledb] abstract class QueryBase[RT](q: Query[RT], dbTypes: AtomicDbWr
 
 private[simpledb] case class ReadyQuery[RT] private[simpledb] (query: String, args: Seq[ParameterValue[_]], protected val reads: DbCursorReader[RT]) {
 
-  private[this] val (jdbcQuery, orderedArguments) = translateNamedParameters(query, args.map(_.parameter), args)
+  private[this] val (jdbcQuery, orderedArguments) = translateNamedParameters(query, args)
 
   private[simpledb] def foreach(f: (RT) => Unit)(implicit tx: Transaction, fetchSize: FetchSize): Unit = {
     val s = Srdb.select(jdbcQuery, fetchSize)(_.foreach(f)(reads))

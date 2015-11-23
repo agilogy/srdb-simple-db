@@ -18,7 +18,7 @@ libraryDependencies ++= Seq(
   "com.agilogy" %% "groupable" % "1.0.1",
   "com.agilogy" %% "srdb-core" % "1.0.1-5-g743942d",
   "com.agilogy" %% "srdb-tx" % "1.0.1",
-  "com.agilogy" %% "srdb-types" % "1.1.1-6-g7a8f476",
+  "com.agilogy" %% "srdb-types" % "1.1.1-7-ga3f8004",
   "commons-logging" % "commons-logging" % "1.1.1",
   "org.postgresql" % "postgresql" % "9.3-1103-jdbc41" % "test,it",
   "log4j" % "log4j" % "1.2.17" % "test,it",
@@ -90,9 +90,9 @@ scalastyleFailOnError := true
 // See https://github.com/sbt/sbt-scalariform
 scalariformSettings
 
-ScoverageSbtPlugin.ScoverageKeys.coverageExcludedPackages := "<empty>"
+coverageExcludedPackages := "<empty>"
 
-ScoverageSbtPlugin.ScoverageKeys.coverageHighlighting := false
+coverageHighlighting := false
 
 Boilerplate.settings
 
