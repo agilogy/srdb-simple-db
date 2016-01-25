@@ -16,9 +16,9 @@ resolvers += Resolver.url("Agilogy Scala",url("http://dl.bintray.com/agilogy/sca
 
 libraryDependencies ++= Seq(
   "com.agilogy" %% "groupable" % "1.0.1",
-  "com.agilogy" %% "srdb-core" % "1.0.1-5-g743942d",
+  "com.agilogy" %% "srdb-core" % "2.0",
   "com.agilogy" %% "srdb-tx" % "1.0.1",
-  "com.agilogy" %% "srdb-types" % "1.1.1-7-ga3f8004",
+  "com.agilogy" %% "srdb-types" % "2.0",
   "commons-logging" % "commons-logging" % "1.1.1",
   "org.postgresql" % "postgresql" % "9.3-1103-jdbc41" % "test,it",
   "log4j" % "log4j" % "1.2.17" % "test,it",

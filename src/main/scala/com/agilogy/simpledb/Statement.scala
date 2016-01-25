@@ -33,7 +33,7 @@ trait RawStatement[RT] extends StatementWithParams[RT] {
     checkNamedParameters(sql, actualArgs.map(_.parameter).map(_.name).toSet)
     val (jdbcQuery, orderedArgs) = translateNamedParameters(sql, actualArgs)
     keyReader match {
-      case ActualStatementResultReader(r) => Srdb.updateGeneratedKeys(jdbcQuery)(r)(tx.conn, orderedArgs.map(_.toArg))
+      case ActualStatementResultReader(r) => Srdb.updateGeneratedKeys(jdbcQuery)(r.get)(tx.conn, orderedArgs.map(_.toArg))
       case _ => Srdb.update(jdbcQuery)(tx.conn, orderedArgs.map(_.toArg)).asInstanceOf[RT]
     }
   }
@@ -51,7 +51,7 @@ case class TextRawStatement[RT](sql: String)(val keyReader: StatementResultReade
 }
 
 private[simpledb] class StatementByPositionBase[RT](stm: RawStatement[RT], parameterWrites: AtomicDbWriter[_]*) {
-  val params = (0 to parameterWrites.length - 1).zip(parameterWrites).map {
+  val params = (0 until parameterWrites.length).zip(parameterWrites).map {
     np =>
       Parameter(np._1)(np._2)
   }

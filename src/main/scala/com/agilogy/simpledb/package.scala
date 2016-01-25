@@ -7,7 +7,7 @@ import scala.language.implicitConversions
 
 package object simpledb extends StatementFactory with QueryFactory with Types {
 
-  implicit def simpleCursorReader[RT](dbReader: DbReader[RT]): SimpleDbCursorReader[RT] = SimpleDbCursorReader.simpleCursorReader(dbReader)
+  implicit def simpleCursorReader[RT](dbReader: DbReader[RT]): SimpleDbCursorReader[RT] = SimpleDbCursorReader(dbReader)
   implicit def columnToReader[T](c: Column[T]): AtomicNamedDbReader[T] = c.reader
 
 }

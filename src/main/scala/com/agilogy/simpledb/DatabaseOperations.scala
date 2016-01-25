@@ -14,6 +14,7 @@ trait DatabaseOperations extends StatementFactory {
   def insert(into: Table, values: ColumnAssignment[_]*)(implicit tx: Transaction): Unit = {
     val stmt = insertInto(into).values(values: _*).withoutParams
     stmt()
+    ()
   }
 
   def insertAndGetKey[RT](into: Table, values: ColumnAssignment[_]*)(readKey: DbReader[RT] = getId)(implicit tx: Transaction): RT = {
