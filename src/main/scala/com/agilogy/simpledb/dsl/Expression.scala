@@ -73,7 +73,7 @@ case class CommonConstant[T](v: T, allocatedAs: Option[Int] = None)(implicit val
 }
 
 trait StringExpression extends Expression[String] {
-  def like(e2: StringExpression): LikePredicate = LikePredicate(this, e2)
+  def like(e2: Expression[String]): LikePredicate = LikePredicate(this, e2)
 }
 
 case class StringConstant(v: String, allocatedAs: Option[Int] = None)(implicit val writer: AtomicDbWriter[String], val constantStrategy: ConstantStrategy[String]) extends StringExpression with Constant[String] with Expression[String] {
