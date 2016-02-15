@@ -16,7 +16,7 @@ trait QueryFactory {
 }
 
 trait Query[RT] extends WithParams[RT] {
-  val sql: String
+  def sql: String
   private[simpledb] val preAssignedParameters: Seq[ParameterValue[_]]
   private[simpledb] val reads: DbCursorReader[RT]
 

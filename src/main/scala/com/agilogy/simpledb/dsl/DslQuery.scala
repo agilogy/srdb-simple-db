@@ -4,13 +4,13 @@ import com.agilogy.simpledb.{ ParameterValue, Query }
 import com.agilogy.simpledb.schema.Column
 import com.agilogy.srdb.types.DbCursorReader
 
-case class DslQuery[RT] private (from: Relation, where: Predicate, select: Seq[SelectedElement[_]], reads: DbCursorReader[RT],
+case class DslQuery[RT] protected (from: Relation, where: Predicate, select: Seq[SelectedElement[_]], reads: DbCursorReader[RT],
   groupBy: Seq[Column[_]] = Seq.empty, orderBy: Seq[OrderByCriterion] = Seq.empty,
   constants: Seq[Constant[_]], isDistinct: Boolean = false)
     extends Query[RT] {
   protected val parameters: Seq[Param[_]] = from.parameters ++ where.parameters ++ select.flatMap(_.parameters)
 
-  val sql =
+  def sql: String =
     s"select ${if (isDistinct) "distinct " else ""}${select.map(e => e.sql + e.alias.map(" as " + _).getOrElse("")).mkString(", ")} " +
       s"${from.sql}" +
       (if (where != True) s" where ${where.sql}" else "") +
