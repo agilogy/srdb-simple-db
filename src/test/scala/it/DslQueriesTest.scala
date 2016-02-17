@@ -55,4 +55,17 @@ class DslQueriesTest extends TestBase {
     }
   }
 
+  it should "support non predefined functions in the dsl" in {
+    val charLength = sqlFunction1[String, Int]("char_length")
+    val q = from(d).where(charLength(d.city) >= 10).select(d.name)
+    inTransaction {
+      implicit tx =>
+        insertDepartments()
+        val res = q()
+        assert(res.size === 2)
+        assert(res.contains("d1"))
+        assert(res.contains("d2"))
+    }
+  }
+
 }

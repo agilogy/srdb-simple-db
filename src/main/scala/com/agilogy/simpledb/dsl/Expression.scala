@@ -25,7 +25,7 @@ trait Expression[T] {
   def in(v: Seq[T])(implicit writer: AtomicNotNullDbWriter[T], cs: ConstantStrategy[T]): Predicate =
     InPredicate(this, Constant(v)(InClauseValuesDbWriter[T], InClauseValuesConstantStrategy[T]))
 
-  def in(v: Expression[T]*): Predicate = InPredicate(this, new  Expression[Seq[T]] {
+  def in(v: Expression[T]*): Predicate = InPredicate(this, new Expression[Seq[T]] {
 
     override def sql: String = v.map(_.sql).mkString("(", ",", ")")
 
@@ -103,6 +103,14 @@ case class NotPredicate(p: Predicate) extends Predicate {
   override private[simpledb] val parameters: Seq[Param[_]] = p.parameters
   private[simpledb] override val allocateConstants: ConstantAllocation[NotPredicate] =
     p.allocateConstants.map(p => NotPredicate(p))
+}
+
+case class UnaryFunction[I, O](name: String, arg: Expression[I]) extends Expression[O] {
+  override def sql: String = s"$name(${arg.sql})"
+  override private[simpledb] val parameters: Seq[Param[_]] = arg.parameters
+  override private[simpledb] val allocateConstants: ConstantAllocation[Expression[O]] = arg.allocateConstants.map {
+    argc => UnaryFunction(name, argc)
+  }
 }
 
 trait BinaryFunction[T1, T2, RT] extends Expression[RT] {
@@ -294,6 +302,8 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
   }
 
   def notNull[T](arg: Expression[Option[T]]): Expression[T] = NotNullExpression[T](arg)
+
+  def sqlFunction1[I, O](name: String): (Expression[I]) => Expression[O] = i => UnaryFunction(name, i)
 
   //  implicit def selectedColumns(c:Seq[Column[_]]):Seq[SelectedColumn[_]] = c.map(c => SelectedColumn(c))
 
