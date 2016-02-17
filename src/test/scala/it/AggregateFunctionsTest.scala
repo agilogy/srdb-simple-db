@@ -2,6 +2,7 @@ package it
 
 import com.agilogy.simpledb._
 import com.agilogy.simpledb.dsl._
+import com.agilogy.simpledb.schema.Column
 
 class AggregateFunctionsTest extends TestBase {
 
@@ -54,6 +55,17 @@ class AggregateFunctionsTest extends TestBase {
       implicit tx =>
         val res = from(p).select(count(p.name).as("a")).withoutParams().head
         assert(res === 3)
+    }
+  }
+
+  they should "use a non predefined function" in {
+
+    val avg = aggregateFunction[Int, Int]("avg")
+    insertPlanets()
+    inTransaction {
+      implicit tx =>
+        val res = from(p).select(avg(p.position).as("average_pos")).withoutParams().head
+        assert(res === (1 + 2 + 3) / 3)
     }
   }
 

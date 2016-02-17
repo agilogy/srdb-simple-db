@@ -341,6 +341,10 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
 
   def count[T](c: Column[T]): AggregateExpression[T, Int] = AggregateExpression("count", c)
 
+  def aggregateFunction[I, O](name: String): (Column[I]) => AggregateExpression[I, O] = {
+    c => AggregateExpression[I, O](name, c)
+  }
+
   case class NotNullExpression[T](arg: Expression[Option[T]]) extends BaseExpression[T] {
 
     override def sql: String = arg.sql
