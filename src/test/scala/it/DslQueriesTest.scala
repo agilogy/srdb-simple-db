@@ -68,4 +68,15 @@ class DslQueriesTest extends TestBase {
     }
   }
 
+  it should "support string query fragments in the dsl" in {
+    val q = from(d).where(sql[Boolean]("lower(d.city) like 'b%'")).select(d.name)
+    inTransaction {
+      implicit tx =>
+        insertDepartments()
+        val res = q()
+        assert(res.size === 1)
+        assert(res.contains("d3"))
+    }
+  }
+
 }

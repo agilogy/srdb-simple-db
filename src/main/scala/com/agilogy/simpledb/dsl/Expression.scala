@@ -305,6 +305,12 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
 
   def sqlFunction1[I, O](name: String): (Expression[I]) => Expression[O] = i => UnaryFunction(name, i)
 
+  case class SqlExpression[T](sql: String) extends Expression[T] {
+    private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
+  }
+
+  def sql[T](s: String): Expression[T] = SqlExpression[T](s)
+
   //  implicit def selectedColumns(c:Seq[Column[_]]):Seq[SelectedColumn[_]] = c.map(c => SelectedColumn(c))
 
   implicit def table2Relation(t: Table): JoinRelation = Relation.table2Relation(t)
