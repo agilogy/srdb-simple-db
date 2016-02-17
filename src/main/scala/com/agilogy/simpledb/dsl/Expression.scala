@@ -119,13 +119,6 @@ trait BinaryFunction[T1, T2, RT] extends Expression[RT] {
   } yield copy(v1a, v2a)
 }
 
-case class NotNullEqualsPredicate[T](v1: Expression[T], v2: Expression[T]) extends Predicate with BinaryFunction[T, T, Boolean] {
-  override lazy val sql: String = s"(${v1.sql} = ${v2.sql})"
-
-  override type SBF = NotNullEqualsPredicate[T]
-  override def copy(v1: Expression[T], v2: Expression[T]): SBF = NotNullEqualsPredicate(v1, v2)
-}
-
 case class EqualsPredicate[T](v1: Expression[T], v2: Expression[T]) extends Predicate with BinaryFunction[T, T, Boolean] {
   override lazy val sql: String = s"(${v1.sql} = ${v2.sql})"
   override type SBF = EqualsPredicate[T]
