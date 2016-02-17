@@ -23,7 +23,7 @@ trait Expression[T] {
   def >=(v: Expression[T]): Predicate = ComparisonPredicate(this, v, GTE)
 
   def in(v: Seq[T])(implicit writer: AtomicNotNullDbWriter[T], cs: ConstantStrategy[T]): Predicate =
-    InPredicate(this, CommonConstant(v)(InClauseValuesDbWriter[T], InClauseValuesConstantStrategy[T]))
+    InPredicate(this, Constant(v)(InClauseValuesDbWriter[T], InClauseValuesConstantStrategy[T]))
 
   def in(v: Expression[T]*): Predicate = InPredicate(this, new Expression[Seq[T]] {
 
@@ -49,40 +49,17 @@ trait Expression[T] {
   private[simpledb] val allocateConstants: ConstantAllocation[Expression[T]] = ConstantAllocation.empty(this)
 }
 
-trait BaseExpression[T] extends Expression[T]
-
-trait Constant[T] extends Expression[T] {
-  val v: T
-  val writer: AtomicDbWriter[T]
-  val constantStrategy: ConstantStrategy[T]
-  val allocatedAs: Option[Int]
+case class Constant[T](v: T, allocatedAs: Option[Int] = None)(implicit val writer: AtomicDbWriter[T], val constantStrategy: ConstantStrategy[T]) extends Expression[T] {
   private[simpledb] def asParameterValue = Parameter[T]("c" + allocatedAs.get)(writer).set(v)
-  private[simpledb] def assignIndex(i: Int): Constant[T]
+  private[simpledb] def assignIndex(i: Int): Constant[T] = this.copy(allocatedAs = Some(i))
+  private[simpledb] override val allocateConstants: ConstantAllocation[Constant[T]] = {
+    if (constantStrategy.isSecure(v)) ConstantAllocation.empty(this)
+    else ConstantAllocation.newConstant(this).asInstanceOf[ConstantAllocation[Constant[T]]]
+  }
   // The sql may be computed for an expression whose constants have not been yet allocated
   // In such a case, we return '?' instead of the constant in the sql
   override lazy val sql: String = allocatedAs.map(i => ":c" + i).getOrElse(constantStrategy.secureConstant(v).getOrElse("?"))
   override private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
-}
-
-case class CommonConstant[T](v: T, allocatedAs: Option[Int] = None)(implicit val writer: AtomicDbWriter[T], val constantStrategy: ConstantStrategy[T]) extends Constant[T] {
-  private[simpledb] def assignIndex(i: Int): CommonConstant[T] = this.copy(allocatedAs = Some(i))
-  private[simpledb] override val allocateConstants: ConstantAllocation[CommonConstant[T]] = {
-    if (constantStrategy.isSecure(v)) ConstantAllocation.empty(this)
-    else ConstantAllocation.newConstant(this).asInstanceOf[ConstantAllocation[CommonConstant[T]]]
-  }
-}
-
-trait StringExpression extends Expression[String] {
-  def like(e2: Expression[String]): LikePredicate = LikePredicate(this, e2)
-}
-
-case class StringConstant(v: String, allocatedAs: Option[Int] = None)(implicit val writer: AtomicDbWriter[String], val constantStrategy: ConstantStrategy[String]) extends StringExpression with Constant[String] with Expression[String] {
-  private[simpledb] override val allocateConstants: ConstantAllocation[StringConstant] = {
-    if (constantStrategy.isSecure(v)) ConstantAllocation.empty(this)
-    else ConstantAllocation.newConstant(this).asInstanceOf[ConstantAllocation[StringConstant]]
-  }
-
-  override private[simpledb] def assignIndex(i: Int): Constant[String] = this.copy(allocatedAs = Some(i))(writer, constantStrategy)
 }
 
 case class Param[T](pos: Int) extends Expression[T] {
@@ -128,7 +105,7 @@ case class NotPredicate(p: Predicate) extends Predicate {
     p.allocateConstants.map(p => NotPredicate(p))
 }
 
-trait BinaryFunction[T1, T2, RT] extends BaseExpression[RT] {
+trait BinaryFunction[T1, T2, RT] extends Expression[RT] {
   val v1: Expression[T1]
   val v2: Expression[T2]
 
@@ -252,22 +229,19 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
 
   type Predicate = Expression[Boolean]
 
-  implicit class StringColumnExpression(val c: Column[String]) extends StringExpression with ColumnExpression[String]
-
-  implicit class BooleanColumnExpression(val c: Column[Boolean]) extends Predicate with ColumnExpression[Boolean]
-
-  implicit class IntColumnExpression(val c: Column[Int]) extends Expression[Int] with ColumnExpression[Int]
-
-  implicit class LongColumnExpression(val c: Column[Long]) extends Expression[Long] with ColumnExpression[Long]
-
   implicit class GenericColumnExpression[T](val c: Column[T]) extends ColumnExpression[T]
 
-  implicit class PredicateOps(val e: Expression[Boolean]) {
+  implicit class PredicateOps(e: Expression[Boolean]) {
 
     def or(p2: Predicate): OrPredicate = OrPredicate(Seq(e, p2))
 
     def and(p2: Predicate): AndPredicate = AndPredicate(Seq(e, p2))
 
+  }
+
+  implicit class StringExpressionOps(e: Expression[String]) {
+
+    def like(e2: Expression[String]): LikePredicate = LikePredicate(e, e2)
   }
 
   case class BasicColumnExpression[T](c: Column[T]) extends ColumnExpression[T]
@@ -279,12 +253,9 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
 
   implicit def const(b: Boolean): Predicate = if (b) True else False
 
-  implicit def const(s: String)(implicit writer: AtomicDbWriter[String], constantStrategy: ConstantStrategy[String]): StringConstant = StringConstant(s)(writer, constantStrategy)
+  implicit def const[T](v: Option[T])(implicit writer: AtomicOptionalDbWriter[T], constantStrategy: ConstantStrategy[T]): Constant[Option[T]] = Constant(v)
 
-  //TODO: And Option[String]?
-  implicit def const[T](v: Option[T])(implicit writer: AtomicOptionalDbWriter[T], constantStrategy: ConstantStrategy[T]): Constant[Option[T]] = CommonConstant(v)
-
-  implicit def const[T](v: T)(implicit writer: AtomicNotNullDbWriter[T], constantStrategy: ConstantStrategy[T]): Constant[T] = CommonConstant(v)
+  implicit def const[T](v: T)(implicit writer: AtomicNotNullDbWriter[T], constantStrategy: ConstantStrategy[T]): Constant[T] = Constant(v)
 
   def not(p: Predicate): NotPredicate = NotPredicate(p)
 
@@ -344,7 +315,7 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
     c => AggregateExpression[I, O](name, c)
   }
 
-  case class NotNullExpression[T](arg: Expression[Option[T]]) extends BaseExpression[T] {
+  case class NotNullExpression[T](arg: Expression[Option[T]]) extends Expression[T] {
 
     override def sql: String = arg.sql
 

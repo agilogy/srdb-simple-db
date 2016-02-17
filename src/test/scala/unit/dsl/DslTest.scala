@@ -130,7 +130,7 @@ class DslTest extends FlatSpec {
 
   they should "support complex predicates" in {
     val p = People("p")
-    val pred = (StringColumnExpression(p.name) ==== "smith") or (p.age >= 16 and p.age <= 65) and (p.motherId ==== 6l)
+    val pred = (p.name ==== "smith") or (p.age >= 16 and p.age <= 65) and (p.motherId ==== 6l)
     assert(pred.sql === "(((p.name = 'smith') or ((p.age >= 16) and (p.age <= 65))) and (p.mother_id = 6))")
   }
 
