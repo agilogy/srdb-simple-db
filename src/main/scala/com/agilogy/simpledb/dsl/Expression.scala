@@ -90,17 +90,6 @@ case class Param[T](pos: Int) extends Expression[T] {
   override private[simpledb] val parameters: Seq[Param[_]] = Seq(this)
 }
 
-trait Predicate extends Expression[Boolean] {
-
-  def or(p2: Predicate): OrPredicate = OrPredicate(Seq(this, p2))
-
-  def and(p2: Predicate): AndPredicate = AndPredicate(Seq(this, p2))
-
-  private[simpledb] override val allocateConstants: ConstantAllocation[Predicate] =
-    ConstantAllocation.empty(this)
-
-}
-
 sealed case class ConstantPredicate(v: Boolean) extends Predicate {
   override lazy val sql: String = v.toString
   override private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
@@ -113,7 +102,7 @@ object False extends ConstantPredicate(false)
 case class OrPredicate(ps: Seq[Predicate]) extends Predicate {
   override lazy val sql: String = "(" + ps.map(_.sql).mkString(" or ") + ")"
 
-  override def or(p2: Predicate): OrPredicate = OrPredicate(ps :+ p2)
+  def or(p2: Predicate): OrPredicate = OrPredicate(ps :+ p2)
 
   override private[simpledb] val parameters: Seq[Param[_]] = ps.flatMap(_.parameters)
 
@@ -124,7 +113,7 @@ case class OrPredicate(ps: Seq[Predicate]) extends Predicate {
 case class AndPredicate(ps: Seq[Predicate]) extends Predicate {
   override lazy val sql: String = "(" + ps.map(_.sql).mkString(" and ") + ")"
 
-  override def and(p2: Predicate): AndPredicate = AndPredicate(ps :+ p2)
+  def and(p2: Predicate): AndPredicate = AndPredicate(ps :+ p2)
 
   override private[simpledb] val parameters: Seq[Param[_]] = ps.flatMap(_.parameters)
 
@@ -261,6 +250,8 @@ trait LowPriorityConstantStrategy {
 
 trait ExpressionSyntax extends LowPriorityConstantStrategy {
 
+  type Predicate = Expression[Boolean]
+
   implicit class StringColumnExpression(val c: Column[String]) extends StringExpression with ColumnExpression[String]
 
   implicit class BooleanColumnExpression(val c: Column[Boolean]) extends Predicate with ColumnExpression[Boolean]
@@ -270,6 +261,14 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
   implicit class LongColumnExpression(val c: Column[Long]) extends Expression[Long] with ColumnExpression[Long]
 
   implicit class GenericColumnExpression[T](val c: Column[T]) extends ColumnExpression[T]
+
+  implicit class PredicateOps(val e: Expression[Boolean]) {
+
+    def or(p2: Predicate): OrPredicate = OrPredicate(Seq(e, p2))
+
+    def and(p2: Predicate): AndPredicate = AndPredicate(Seq(e, p2))
+
+  }
 
   case class BasicColumnExpression[T](c: Column[T]) extends ColumnExpression[T]
 
