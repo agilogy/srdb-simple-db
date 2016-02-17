@@ -25,7 +25,7 @@ trait Expression[T] {
   def in(v: Seq[T])(implicit writer: AtomicNotNullDbWriter[T], cs: ConstantStrategy[T]): Predicate =
     InPredicate(this, Constant(v)(InClauseValuesDbWriter[T], InClauseValuesConstantStrategy[T]))
 
-  def in(v: Expression[T]*): Predicate = InPredicate(this, new Expression[Seq[T]] {
+  def in(v: Expression[T]*): Predicate = InPredicate(this, new  Expression[Seq[T]] {
 
     override def sql: String = v.map(_.sql).mkString("(", ",", ")")
 
@@ -192,28 +192,6 @@ class NullExpression[T] extends Expression[T] {
   override private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
 }
 
-trait ColumnExpression[T] extends Expression[T] {
-  val c: Column[T]
-  override lazy val sql: String = c.completeName
-
-  def canEqual(other: Any): Boolean = other.isInstanceOf[ColumnExpression[_]]
-
-  override def equals(other: Any): Boolean = other match {
-    case that: ColumnExpression[_] => (that canEqual this) && c == that.c
-    case _ => false
-  }
-
-  override def hashCode(): Int = {
-    c.hashCode()
-  }
-
-  override def toString: String = s"ColumnExpression($c)"
-
-  def :=(e: Expression[T]): ColumnAssignment[T] = ColumnAssignment(c, e)
-
-  override private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
-}
-
 trait LowPriorityConstantStrategy {
   //  implicit val noConstants: ConstantStrategy[Any] = NoConstants
 }
@@ -221,8 +199,6 @@ trait LowPriorityConstantStrategy {
 trait ExpressionSyntax extends LowPriorityConstantStrategy {
 
   type Predicate = Expression[Boolean]
-
-  implicit class GenericColumnExpression[T](val c: Column[T]) extends ColumnExpression[T]
 
   implicit class PredicateOps(e: Expression[Boolean]) {
 
@@ -236,8 +212,6 @@ trait ExpressionSyntax extends LowPriorityConstantStrategy {
 
     def like(e2: Expression[String]): LikePredicate = LikePredicate(e, e2)
   }
-
-  case class BasicColumnExpression[T](c: Column[T]) extends ColumnExpression[T]
 
   case class AggregateExpression[T, T2](aggregateFunction: String, c: Column[T]) extends Expression[T2] {
     override lazy val sql: String = aggregateFunction + "(" + c.completeName + ")"

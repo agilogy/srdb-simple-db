@@ -1,6 +1,6 @@
 package com.agilogy.simpledb.schema
 
-import com.agilogy.simpledb.dsl.{ SelectedElement, ConstantAllocation, Param }
+import com.agilogy.simpledb.dsl._
 import com.agilogy.srdb.types._
 
 class PrimaryKey[T](val columns: Column[_]*)
@@ -54,13 +54,13 @@ trait Column[T] extends SelectedElement[T] {
 
   val writer: AtomicDbWriter[T]
 
-  override lazy val sql: String = table.alias + "." + name
+  override lazy val sql: String = completeName
 
-  protected[simpledb] def tableAlias: Option[String]
+  protected[simpledb] def tableAlias: Option[String] = Some(table.alias)
 
   private[schema] def at[TT2 <: Table](t2: TT2): Column[T]
 
-  private[simpledb] def completeName: String = tableAlias.map(ta => ta + ".").getOrElse("") + name
+  private[simpledb] def completeName: String = table.alias + "." + name
 
   val alias: Option[String] = None
 
@@ -69,11 +69,11 @@ trait Column[T] extends SelectedElement[T] {
   type self = Column[T]
 
   override private[simpledb] val allocateConstants = ConstantAllocation.empty(this)
+
+  def :=(e: Expression[T]): ColumnAssignment[T] = ColumnAssignment(this, e)
 }
 
 case class NotNullColumn[T] private[schema] (table: Table, name: String)(implicit val columnType: ColumnType[T]) extends Column[T] {
-
-  override protected[simpledb] def tableAlias: Option[String] = Some(table.alias)
 
   private[schema] def at[TT2 <: Table](t2: TT2): NotNullColumn[T] = NotNullColumn(t2, name)
 
@@ -85,8 +85,6 @@ case class NotNullColumn[T] private[schema] (table: Table, name: String)(implici
 }
 
 case class OptionalColumn[T] private[schema] (table: Table, name: String)(implicit val columnType: ColumnType[T]) extends Column[Option[T]] {
-
-  override protected[simpledb] def tableAlias: Option[String] = Some(table.alias)
 
   private[schema] def at[TT2 <: Table](t2: TT2): OptionalColumn[T] = OptionalColumn(t2, name)
 
