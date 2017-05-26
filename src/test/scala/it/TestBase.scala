@@ -12,7 +12,7 @@ trait TestBase extends FlatSpec with DatabaseUriConfig with BeforeAndAfterAll wi
 
   override lazy val dbUriPropertyName = "SIMPLE_DB_TEST_DB_URL"
 
-  val defaultDbUri = "postgresql://test:test@localhost:5432/simple-db-test"
+  val defaultDbUri = "postgresql://postgres:postgres@localhost:5432/simple-db-test"
 
   val ds = new ComboPooledDataSource()
   ds.setJdbcUrl(databaseConnectionUrl)

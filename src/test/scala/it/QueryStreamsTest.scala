@@ -68,4 +68,35 @@ class QueryStreamsTest extends TestBase {
     assert(result === List("d1 - Penedès", "d3 - Barcelona"))
   }
 
+  they should "zip a stream with index" in {
+    val departmentIds = inTransaction { implicit tx =>
+      insertDepartments()
+    }
+    val selectDepartments = createQuery("select * from departments d")(d.reads).withoutParams
+    val stream = selectDepartments.stream().zipWithIndex
+    val result = stream.toSeq
+    assert(result.map(_._2) === 0.to(2))
+    assert(result.map(_._1.id) === Seq(departmentIds._1, departmentIds._2, departmentIds._3))
+  }
+
+  they should "group" in {
+    val departmentIds = inTransaction { implicit tx =>
+      insertDepartments()
+    }
+    val selectDepartments = createQuery("select * from departments d")(d.reads).withoutParams
+    val stream = selectDepartments.stream().grouped(1)
+    val result = stream.toSeq
+    assert(result.map(_.map(_.id)) === Seq(Seq(departmentIds._1), Seq(departmentIds._2), Seq(departmentIds._3)))
+  }
+
+  they should "group leftover elements" in {
+    val departmentIds = inTransaction { implicit tx =>
+      insertDepartments()
+    }
+    val selectDepartments = createQuery("select * from departments d")(d.reads).withoutParams
+    val stream = selectDepartments.stream().grouped(2)
+    val result = stream.toSeq
+    assert(result.map(_.map(_.id)) === Seq(Seq(departmentIds._1, departmentIds._2), Seq(departmentIds._3)))
+  }
+
 }

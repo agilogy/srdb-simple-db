@@ -1,11 +1,12 @@
 package com.agilogy.simpledb
 
 import com.agilogy.srdb.LimitedFetchSize
-import com.agilogy.srdb.tx.{ TransactionController, NewTransaction }
+import com.agilogy.srdb.tx.{NewTransaction, TransactionController}
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 
-trait QueryStream[RT] {
+trait QueryStream[RT] { self =>
   def toSeq: Seq[RT] = {
     val lb = ListBuffer.empty[RT]
     foreach(lb.append(_))
@@ -25,6 +26,38 @@ trait QueryStream[RT] {
   def filter(f: (RT) => Boolean): QueryStream[RT] = new FilteredQueryStream[RT](this, f)
 
   def collect[RT2](pf: PartialFunction[RT, RT2]): QueryStream[RT2] = this.filter(pf.isDefinedAt).map(pf)
+
+  def foldLeft[Z](z: Z)(f:(RT, Z)=> Z): Z = {
+    var acc = z
+    foreach(r => acc = f(r,acc))
+    acc
+  }
+
+  def zipWithIndex = new QueryStream[(RT, Int)] {
+    override def foreach(f: ((RT, Int)) => Unit): Unit = {
+      var i = 0
+      self.foreach{rt =>
+        f((rt,i))
+        i+=1
+      }
+    }
+  }
+
+  def grouped(n: Int) = new QueryStream[Seq[RT]] {
+    override def foreach(f: (Seq[RT]) => Unit) = {
+      var seq = mutable.ListBuffer.empty[RT]
+      self.foreach { rt =>
+        seq += rt
+        if (seq.length == n) {
+          f(seq)
+          seq = mutable.ListBuffer.empty[RT]
+        }
+      }
+      if (seq.nonEmpty) {
+        f(seq)
+      }
+    }
+  }
 }
 
 case class ReadyQueryStream[RT] private[simpledb] (q: ReadyQuery[RT])(implicit txController: TransactionController) extends QueryStream[RT] {
