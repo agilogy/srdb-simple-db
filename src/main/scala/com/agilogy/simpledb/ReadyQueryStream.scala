@@ -27,9 +27,9 @@ trait QueryStream[RT] { self =>
 
   def collect[RT2](pf: PartialFunction[RT, RT2]): QueryStream[RT2] = this.filter(pf.isDefinedAt).map(pf)
 
-  def foldLeft[Z](z: Z)(f:(RT, Z)=> Z): Z = {
+  def foldLeft[Z](z: Z)(f:(Z, RT)=> Z): Z = {
     var acc = z
-    foreach(r => acc = f(r,acc))
+    foreach(r => acc = f(acc, r))
     acc
   }
 
