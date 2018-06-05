@@ -1,7 +1,5 @@
 package com.agilogy.simpledb.dsl
 
-import org.joda.time.{ DateTime, DateTimeZone }
-
 trait ConstantStrategy[-T] {
   def isSecure(value: T): Boolean = true
 

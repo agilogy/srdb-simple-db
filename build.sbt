@@ -8,24 +8,23 @@ name := "simple-db"
 
 scalaVersion := "2.11.7"
 
-crossScalaVersions := Seq("2.10.6","2.11.7")
+crossScalaVersions := Seq("2.10.7","2.11.12","2.12.6")
 
 parallelExecution in Test := false
 
 resolvers += Resolver.url("Agilogy Scala",url("http://dl.bintray.com/agilogy/scala/"))(Resolver.ivyStylePatterns)
 
 libraryDependencies ++= Seq(
-  "com.agilogy" %% "groupable" % "1.0.1",
-  "com.agilogy" %% "srdb-core" % "2.0",
-  "com.agilogy" %% "srdb-tx" % "1.0.2",
-  "com.agilogy" %% "srdb-types" % "2.0.1",
-  "commons-logging" % "commons-logging" % "1.1.1",
+  "com.agilogy" %% "groupable" % "1.1",
+  "com.agilogy" %% "srdb-core" % "2.2",
+  "com.agilogy" %% "srdb-tx" % "1.1",
+  "com.agilogy" %% "srdb-types" % "2.1",
   "org.postgresql" % "postgresql" % "9.3-1103-jdbc41" % "test,it",
   "log4j" % "log4j" % "1.2.17" % "test,it",
   "c3p0" % "c3p0" % "0.9.1.2" % "test,it",
   "com.googlecode.flyway" % "flyway-core" % "2.0" % "test,it",
-  "org.scalatest" %% "scalatest" % "2.2.4" % "test,it",
-  "org.scalaj" %% "scalaj-time" % "0.8"
+  "org.scalatest" %% "scalatest" % "3.0.1" % "test,it",
+  "com.github.nscala-time" %% "nscala-time" % "2.20.0"
 )
 
 // --> Linters
@@ -80,7 +79,7 @@ scalacOptions in Compile := (scalacOptions in Compile).value filterNot { switch 
 
 resolvers += "Linter Repository" at "https://hairyfotr.github.io/linteRepo/releases"
 
-addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.12")
+addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.17")
 
 scalastyleFailOnError := true
 
