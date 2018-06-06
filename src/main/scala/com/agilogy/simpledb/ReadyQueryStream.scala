@@ -1,7 +1,7 @@
 package com.agilogy.simpledb
 
 import com.agilogy.srdb.LimitedFetchSize
-import com.agilogy.srdb.tx.{NewTransaction, TransactionController}
+import com.agilogy.srdb.tx.{ NewTransaction, TransactionController }
 
 import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
@@ -27,7 +27,7 @@ trait QueryStream[RT] { self =>
 
   def collect[RT2](pf: PartialFunction[RT, RT2]): QueryStream[RT2] = this.filter(pf.isDefinedAt).map(pf)
 
-  def foldLeft[Z](z: Z)(f:(Z, RT)=> Z): Z = {
+  def foldLeft[Z](z: Z)(f: (Z, RT) => Z): Z = {
     var acc = z
     foreach(r => acc = f(acc, r))
     acc
@@ -36,9 +36,9 @@ trait QueryStream[RT] { self =>
   def zipWithIndex = new QueryStream[(RT, Int)] {
     override def foreach(f: ((RT, Int)) => Unit): Unit = {
       var i = 0
-      self.foreach{rt =>
-        f((rt,i))
-        i+=1
+      self.foreach { rt =>
+        f((rt, i))
+        i += 1
       }
     }
   }
