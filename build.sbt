@@ -116,8 +116,8 @@ enablePlugins(spray.boilerplate.BoilerplatePlugin)
 
 // --> gitlab
 
-GitlabPlugin.autoImport.gitlabGroupId := Some(583742)
-GitlabPlugin.autoImport.gitlabProjectId := None
+GitlabPlugin.autoImport.gitlabGroupId := None
+GitlabPlugin.autoImport.gitlabProjectId := Some(26236490)
 GitlabPlugin.autoImport.gitlabDomain := "gitlab.com"
 
 GitlabPlugin.autoImport.gitlabCredentials := {
