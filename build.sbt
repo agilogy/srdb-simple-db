@@ -1,18 +1,18 @@
-import bintray.Keys._
 import com.typesafe.sbt.GitPlugin.autoImport._
 import com.typesafe.sbt.GitVersioning
+import com.gilcloud.sbt.gitlab.{GitlabCredentials,GitlabPlugin}
 
 organization := "com.agilogy"
 
 name := "simple-db"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.13"
 
-crossScalaVersions := Seq("2.10.7","2.11.12","2.12.6")
+crossScalaVersions := Seq("2.11.12","2.12.13")
 
 parallelExecution in Test := false
 
-resolvers += Resolver.url("Agilogy Scala",url("http://dl.bintray.com/agilogy/scala/"))(Resolver.ivyStylePatterns)
+resolvers += Resolver.url("Agilogy Scala",url("https://dl.bintray.com/agilogy/scala/"))(Resolver.ivyStylePatterns)
 
 libraryDependencies ++= Seq(
   "com.agilogy" %% "groupable" % "1.1",
@@ -83,42 +83,56 @@ addCompilerPlugin("org.psywerx.hairyfotr" %% "linter" % "0.1.17")
 
 scalastyleFailOnError := true
 
+def withTests(p: Project) =
+  p.configs(IntegrationTest)
+    .settings(inConfig(IntegrationTest)(Defaults.testTasks): _*)
+    .settings(
+    testOptions in Test := Seq(Tests.Filter(unitFilter)),
+    testOptions in IntegrationTest := Seq(Tests.Filter(itFilter)),
+    parallelExecution in IntegrationTest := false
+  )
+
+def itFilter(name: String): Boolean = (name startsWith "it.") || (name startsWith "system.")
+
+def unitFilter(name: String): Boolean = !itFilter(name)
+
+lazy val IntegrationTest = config("it") extend (Test)
+
+lazy val simpledb = withTests(Project(
+  id = "simple-db",
+  base = file(".")))
+
 // <-- Linters
 
 // Reformat at every compile.
 // See https://github.com/sbt/sbt-scalariform
-scalariformSettings
+scalariformAutoformat := false
+scalariformItSettings
 
 coverageExcludedPackages := "<empty>"
 
 coverageHighlighting := false
 
-Boilerplate.settings
+enablePlugins(spray.boilerplate.BoilerplatePlugin)
 
-// --> bintray
+// --> gitlab
 
-seq(bintrayPublishSettings:_*)
+GitlabPlugin.autoImport.gitlabGroupId := Some(583742)
+GitlabPlugin.autoImport.gitlabProjectId := None
+GitlabPlugin.autoImport.gitlabDomain := "gitlab.com"
 
-repository in bintray := "scala"
+GitlabPlugin.autoImport.gitlabCredentials := {
+    val token = sys.env.get("GITLAB_DEPLOY_TOKEN") match {
+        case Some(token) => token
+        case None =>
+            sLog.value.warn(s"Environment variable GITLAB_DEPLOY_TOKEN is undefined, 'publish' will fail.")
+            ""
+    }
+    Some(GitlabCredentials("Deploy-Token", token))
+}
 
-bintrayOrganization in bintray := Some("agilogy")
-
-packageLabels in bintray := Seq("scala")
-
-licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0.html"))
-
-// <-- bintray
+// <-- gitlab
 
 enablePlugins(GitVersioning)
 
 git.useGitDescribe := true
-
-resolvers += "Agilogy snapshots" at "http://188.166.95.201:8081/content/groups/public"
-
-publishMavenStyle := isSnapshot.value
-
-publishTo := {
-  val nexus = "http://188.166.95.201:8081/content/repositories/snapshots"
-  if (isSnapshot.value) Some("snapshots"  at nexus)
-  else publishTo.value
-}
