@@ -41,7 +41,7 @@ trait Query[RT] extends WithParams[RT] {
 }
 
 case class TextQuery[RT](sql: String, reads: DbCursorReader[RT], preAssignedParameters: Seq[ParameterValue[_]] = Seq.empty)
-    extends Query[RT] {
+  extends Query[RT] {
   override def map[RT2](f: (RT) => RT2): TextQuery[RT2] = this.copy(reads = reads.map(f))
 }
 

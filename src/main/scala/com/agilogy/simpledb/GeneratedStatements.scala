@@ -37,147 +37,147 @@ trait StatementWithParams[RT] {
 }
 
 class Statement1[RT, PT1](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1])
-    extends StatementByPositionBase[RT](stmt, paramType1) {
+  extends StatementByPositionBase[RT](stmt, paramType1) {
 
   def apply(arg1: PT1)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1))
 
 }
 
 class Statement2[RT, PT1, PT2](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2) {
 
   def apply(arg1: PT1, arg2: PT2)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2))
 
 }
 
 class Statement3[RT, PT1, PT2, PT3](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3))
 
 }
 
 class Statement4[RT, PT1, PT2, PT3, PT4](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4))
 
 }
 
 class Statement5[RT, PT1, PT2, PT3, PT4, PT5](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5))
 
 }
 
 class Statement6[RT, PT1, PT2, PT3, PT4, PT5, PT6](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6))
 
 }
 
 class Statement7[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7))
 
 }
 
 class Statement8[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8))
 
 }
 
 class Statement9[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9))
 
 }
 
 class Statement10[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10))
 
 }
 
 class Statement11[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11))
 
 }
 
 class Statement12[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12))
 
 }
 
 class Statement13[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13))
 
 }
 
 class Statement14[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14))
 
 }
 
 class Statement15[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14, PT15](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14], paramType15: AtomicDbWriter[PT15])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14, arg15: PT15)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14), PositionalArgument(arg15, paramType15))
 
 }
 
 class Statement16[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14, PT15, PT16](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14], paramType15: AtomicDbWriter[PT15], paramType16: AtomicDbWriter[PT16])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14, arg15: PT15, arg16: PT16)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14), PositionalArgument(arg15, paramType15), PositionalArgument(arg16, paramType16))
 
 }
 
 class Statement17[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14, PT15, PT16, PT17](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14], paramType15: AtomicDbWriter[PT15], paramType16: AtomicDbWriter[PT16], paramType17: AtomicDbWriter[PT17])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14, arg15: PT15, arg16: PT16, arg17: PT17)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14), PositionalArgument(arg15, paramType15), PositionalArgument(arg16, paramType16), PositionalArgument(arg17, paramType17))
 
 }
 
 class Statement18[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14, PT15, PT16, PT17, PT18](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14], paramType15: AtomicDbWriter[PT15], paramType16: AtomicDbWriter[PT16], paramType17: AtomicDbWriter[PT17], paramType18: AtomicDbWriter[PT18])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14, arg15: PT15, arg16: PT16, arg17: PT17, arg18: PT18)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14), PositionalArgument(arg15, paramType15), PositionalArgument(arg16, paramType16), PositionalArgument(arg17, paramType17), PositionalArgument(arg18, paramType18))
 
 }
 
 class Statement19[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14, PT15, PT16, PT17, PT18, PT19](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14], paramType15: AtomicDbWriter[PT15], paramType16: AtomicDbWriter[PT16], paramType17: AtomicDbWriter[PT17], paramType18: AtomicDbWriter[PT18], paramType19: AtomicDbWriter[PT19])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18, paramType19) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18, paramType19) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14, arg15: PT15, arg16: PT16, arg17: PT17, arg18: PT18, arg19: PT19)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14), PositionalArgument(arg15, paramType15), PositionalArgument(arg16, paramType16), PositionalArgument(arg17, paramType17), PositionalArgument(arg18, paramType18), PositionalArgument(arg19, paramType19))
 
 }
 
 class Statement20[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14, PT15, PT16, PT17, PT18, PT19, PT20](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14], paramType15: AtomicDbWriter[PT15], paramType16: AtomicDbWriter[PT16], paramType17: AtomicDbWriter[PT17], paramType18: AtomicDbWriter[PT18], paramType19: AtomicDbWriter[PT19], paramType20: AtomicDbWriter[PT20])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18, paramType19, paramType20) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18, paramType19, paramType20) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14, arg15: PT15, arg16: PT16, arg17: PT17, arg18: PT18, arg19: PT19, arg20: PT20)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14), PositionalArgument(arg15, paramType15), PositionalArgument(arg16, paramType16), PositionalArgument(arg17, paramType17), PositionalArgument(arg18, paramType18), PositionalArgument(arg19, paramType19), PositionalArgument(arg20, paramType20))
 
 }
 
 class Statement21[RT, PT1, PT2, PT3, PT4, PT5, PT6, PT7, PT8, PT9, PT10, PT11, PT12, PT13, PT14, PT15, PT16, PT17, PT18, PT19, PT20, PT21](stmt: RawStatement[RT], paramType1: AtomicDbWriter[PT1], paramType2: AtomicDbWriter[PT2], paramType3: AtomicDbWriter[PT3], paramType4: AtomicDbWriter[PT4], paramType5: AtomicDbWriter[PT5], paramType6: AtomicDbWriter[PT6], paramType7: AtomicDbWriter[PT7], paramType8: AtomicDbWriter[PT8], paramType9: AtomicDbWriter[PT9], paramType10: AtomicDbWriter[PT10], paramType11: AtomicDbWriter[PT11], paramType12: AtomicDbWriter[PT12], paramType13: AtomicDbWriter[PT13], paramType14: AtomicDbWriter[PT14], paramType15: AtomicDbWriter[PT15], paramType16: AtomicDbWriter[PT16], paramType17: AtomicDbWriter[PT17], paramType18: AtomicDbWriter[PT18], paramType19: AtomicDbWriter[PT19], paramType20: AtomicDbWriter[PT20], paramType21: AtomicDbWriter[PT21])
-    extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18, paramType19, paramType20, paramType21) {
+  extends StatementByPositionBase[RT](stmt, paramType1, paramType2, paramType3, paramType4, paramType5, paramType6, paramType7, paramType8, paramType9, paramType10, paramType11, paramType12, paramType13, paramType14, paramType15, paramType16, paramType17, paramType18, paramType19, paramType20, paramType21) {
 
   def apply(arg1: PT1, arg2: PT2, arg3: PT3, arg4: PT4, arg5: PT5, arg6: PT6, arg7: PT7, arg8: PT8, arg9: PT9, arg10: PT10, arg11: PT11, arg12: PT12, arg13: PT13, arg14: PT14, arg15: PT15, arg16: PT16, arg17: PT17, arg18: PT18, arg19: PT19, arg20: PT20, arg21: PT21)(implicit tx: Transaction): RT = stmt.apply(PositionalArgument(arg1, paramType1), PositionalArgument(arg2, paramType2), PositionalArgument(arg3, paramType3), PositionalArgument(arg4, paramType4), PositionalArgument(arg5, paramType5), PositionalArgument(arg6, paramType6), PositionalArgument(arg7, paramType7), PositionalArgument(arg8, paramType8), PositionalArgument(arg9, paramType9), PositionalArgument(arg10, paramType10), PositionalArgument(arg11, paramType11), PositionalArgument(arg12, paramType12), PositionalArgument(arg13, paramType13), PositionalArgument(arg14, paramType14), PositionalArgument(arg15, paramType15), PositionalArgument(arg16, paramType16), PositionalArgument(arg17, paramType17), PositionalArgument(arg18, paramType18), PositionalArgument(arg19, paramType19), PositionalArgument(arg20, paramType20), PositionalArgument(arg21, paramType21))
 

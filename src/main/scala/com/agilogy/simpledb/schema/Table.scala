@@ -107,8 +107,7 @@ object Column {
       (ps, pos, v) => ps.setObject(pos, v),
       (rs, pos) => rs.getObject(pos),
       (rs, name) => rs.getObject(name),
-      JdbcType.Other
-    )
+      JdbcType.Other)
     OptionalColumn[Any](UnknownTable, name)(unknownColumnType)
   }
 

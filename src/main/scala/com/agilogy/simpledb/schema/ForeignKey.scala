@@ -8,7 +8,7 @@ trait ForeignKey {
 }
 
 case class ForeignKey1[T](c: Column[T], references: Column[T])
-    extends ForeignKey {
+  extends ForeignKey {
 
   override private[simpledb] def joinOnPredicate(t2: Table): Predicate = EqualsPredicate(c, references.at(t2))
 }
