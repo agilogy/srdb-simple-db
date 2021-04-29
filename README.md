@@ -5,7 +5,7 @@
 Add the following dependency to your project's `build.sbt`:
 
 ```scala
-"com.agilogy" %% "simple-db" % "0.3.3"
+"com.agilogy" %% "simple-db" % "0.3.4"
 ```
 
 And the following resolver:

@@ -106,7 +106,6 @@ lazy val simpledb = withTests(Project(
 
 // Reformat at every compile.
 // See https://github.com/sbt/sbt-scalariform
-scalariformItSettings
 
 coverageExcludedPackages := "<empty>"
 
