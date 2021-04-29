@@ -12,13 +12,13 @@ crossScalaVersions := Seq("2.11.12","2.12.13")
 
 parallelExecution in Test := false
 
-resolvers += Resolver.url("Agilogy Scala",url("https://dl.bintray.com/agilogy/scala/"))(Resolver.ivyStylePatterns)
+resolvers += "Agilogy GitLab" at "https://gitlab.com/api/v4/groups/583742/-/packages/maven"
 
 libraryDependencies ++= Seq(
-  "com.agilogy" %% "groupable" % "1.1",
+  "com.agilogy" %% "groupable" % "1.2",
   "com.agilogy" %% "srdb-core" % "2.2",
-  "com.agilogy" %% "srdb-tx" % "1.1",
-  "com.agilogy" %% "srdb-types" % "2.1",
+  "com.agilogy" %% "srdb-tx" % "1.2",
+  "com.agilogy" %% "srdb-types" % "2.2.1",
   "org.postgresql" % "postgresql" % "9.3-1103-jdbc41" % "test,it",
   "log4j" % "log4j" % "1.2.17" % "test,it",
   "c3p0" % "c3p0" % "0.9.1.2" % "test,it",

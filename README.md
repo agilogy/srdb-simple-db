@@ -11,7 +11,7 @@ Add the following dependency to your project's `build.sbt`:
 And the following resolver:
 
 ```scala
-resolvers += "Agilogy GitLab" at "https://gitlab.com/api/v4/groups/583742/packages/maven"
+resolvers += "Agilogy GitLab" at "https://gitlab.com/api/v4/groups/583742/-/packages/maven"
 ```
 
 ## Publishing
