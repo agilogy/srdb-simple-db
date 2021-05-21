@@ -7,7 +7,7 @@ import com.agilogy.srdb.types.DbCursorReader
 case class DslQuery[RT] protected (from: Relation, where: Predicate, select: Seq[SelectedElement[_]], reads: DbCursorReader[RT],
   groupBy: Seq[Column[_]] = Seq.empty, orderBy: Seq[OrderByCriterion] = Seq.empty,
   constants: Seq[Constant[_]], isDistinct: Boolean = false)
-    extends Query[RT] {
+  extends Query[RT] {
   protected val parameters: Seq[Param[_]] = from.parameters ++ where.parameters ++ select.flatMap(_.parameters)
 
   def sql: String =

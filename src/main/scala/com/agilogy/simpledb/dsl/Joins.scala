@@ -30,7 +30,7 @@ trait Relation {
   def sql: String
   def `*`: Seq[Column[_]]
 
-  private[simpledb]type Self
+  private[simpledb] type Self
   private[simpledb] val allocateConstants: ConstantAllocation[Self]
 }
 
@@ -46,7 +46,7 @@ case object NoRelation extends Relation {
 
   override private[simpledb] val parameters: Seq[Param[_]] = Seq.empty
 
-  private[simpledb]type Self = NoRelation.type
+  private[simpledb] type Self = NoRelation.type
   private[simpledb] override val allocateConstants: ConstantAllocation[Self] = ConstantAllocation.empty(this)
 }
 
@@ -65,7 +65,7 @@ case class JoinRelation(table: Table, joins: Seq[Join]) extends Relation {
   override def `*`: Seq[Column[_]] = table.* ++ joins.flatMap(_.*)
 
   private[simpledb] override val parameters: Seq[Param[_]] = joins.flatMap(_.parameters)
-  private[simpledb]type Self = JoinRelation
+  private[simpledb] type Self = JoinRelation
   private[simpledb] override val allocateConstants: ConstantAllocation[Self] = ConstantAllocation.allocateAll(joins)(_.allocateConstants).map(js => this.copy(joins = js))
 }
 

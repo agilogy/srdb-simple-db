@@ -86,8 +86,7 @@ object CodeGenerator extends App {
         |trait WithParams[RT]{
         |  self:Query[RT] =>
         |
-        |""".stripMargin
-    )
+        |""".stripMargin)
     (1 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(withParamsMethod(i))
@@ -109,16 +108,14 @@ object CodeGenerator extends App {
         |trait StatementWithParams[RT]{
         |  val self:RawStatement[RT]
         |
-        |""".stripMargin
-    )
+        |""".stripMargin)
     (1 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(withParamsStatementMethod(i))
     }
     sb.append(
       """}
-      """.stripMargin
-    )
+      """.stripMargin)
     (1 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(statementClassCode(i))
@@ -143,8 +140,7 @@ object CodeGenerator extends App {
         |
         |  def select[RT,T1](c1: SelectedElement[T1]): DslQuery[T1] = query(Seq(c1),reader(row => row.get(c1)))
         |
-        | """.stripMargin
-    )
+        | """.stripMargin)
     (2 to 21).map(LoopCount).foreach {
       implicit i =>
         sb.append(selectMethod(i))
@@ -152,8 +148,7 @@ object CodeGenerator extends App {
     sb.append(
       """
         |}
-        | """.stripMargin
-    )
+        | """.stripMargin)
     sb.toString()
   }
 

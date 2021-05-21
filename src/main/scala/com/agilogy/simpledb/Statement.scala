@@ -46,7 +46,7 @@ trait RawStatement[RT] extends StatementWithParams[RT] {
 }
 
 case class TextRawStatement[RT](sql: String)(val keyReader: StatementResultReader[RT])
-    extends RawStatement[RT] {
+  extends RawStatement[RT] {
   override val preAssignedParameters: Seq[ParameterValue[_]] = Seq.empty
 }
 
@@ -62,7 +62,7 @@ private[simpledb] class StatementByPositionBase[RT](stm: RawStatement[RT], param
 }
 
 class StatementByPosition0[RT](stmt: RawStatement[RT])
-    extends StatementByPositionBase[RT](stmt) {
+  extends StatementByPositionBase[RT](stmt) {
   def apply()(implicit tx: Transaction): RT = stmt.apply()(tx)
 }
 
